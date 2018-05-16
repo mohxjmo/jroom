@@ -1,0 +1,67 @@
+#header > .content > .right {
+    float: right;
+    list-style: none;
+    font-size: 14px;
+    padding-top: 15px;
+}
+
+.login-right {
+    margin-left: 750px;
+}
+
+.login-right img{
+    height: 200px;
+    margin-top: 50px;
+    margin-left: 70px;
+    margin-bottom: 20px;
+}
+
+.login-right h3 {
+    color: #DF4782;
+    font-size: 3em;
+    font-weight: bold;
+    padding-bottom: 0.5em;
+    margin-left: 85px;
+}
+
+.login-right form {
+    padding: 1em 0;
+}
+
+.login-right form div {
+    padding: 0 0 0.5em 0;
+}
+
+.login-right span {
+    color: #555;
+    font-size: 1em;
+    padding-bottom: 0.2em;
+    display: block;
+    text-transform: capitalize;
+}
+
+.login-right input[type="text"] {
+    width: 80%;
+}
+
+.login-right input[type="password"] {
+    width: 80%;
+}
+
+.forgot{
+    text-decoration: none;
+}
+
+.forgot:hover{
+    text-decoration: none;
+    color: #DF4782;
+}
+
+button{
+    margin-right: 30px;
+    margin-top: 20px;
+}
+
+#login{
+    margin-left: 190px;
+}

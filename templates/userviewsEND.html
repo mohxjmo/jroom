@@ -1,0 +1,82 @@
+{# @Time    : 2018/5/9 20:50 #}
+{# @Author  : huxiajie  #}
+{% extends 'user.html' %}
+
+{% block right %}
+    <div class="mainRight views">
+        <div class="title">我的约看-已完成</div>
+        {% if flag == "yes" %}
+            {# 列表 #}
+            <div id="Div">
+                <table class="table table-hover" id="likesTable">
+                    <tr>
+                        <th width="300px">房源信息</th>
+                        <th>房源状态</th>
+                        <th>申请约看</th>
+                        <th>完成约看</th>
+                    </tr>
+                    {% for house in houses %}
+                        <tr>
+                            <td>
+                                <img class="housepic" src="{{ house['pic'] }}">
+                                <a class="houselink" href="{{ url_for('detail', houseid=house['id']) }}" target="_blank">{{ house['title'] }}</a>
+                            </td>
+                            <td>
+                                {% if house['status'] == 1 %}
+                                    未出租
+                                {% else %}
+                                    已出租
+                                {% endif %}
+                            </td>
+                            <td>{{ house['timeapply'] }}</td>
+                            <td>{{ house['timeend'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {# 分页 #}
+                <nav aria-label="Page navigation" class="text-center">
+                    <ul class="pagination">
+                        {# 上一页 #}
+                        {% if pagination.has_prev %}
+                            <li><a href="{{ url_for('user', menu='likes', page = pagination.prev_num) }}" aria-label="Previous">&laquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><a href="{{ url_for('user', menu='likes', page = pagination.prev_num) }}" aria-label="Previous">&laquo;</a></li>
+                        {% endif %}
+                        {# 页码 #}
+                        {% for p in pagination.iter_pages() %}
+                            {% if p == pagination.page %}
+                                <li class="active"><a href="{{ url_for('user', menu='likes', page=p) }}">{{ p }}</a></li>
+                            {% else %}
+                                <li ><a href="{{ url_for('user', menu='likes', page=p) }}">{{ p }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                        {# 下一页 #}
+                        {% if pagination.has_next %}
+                            <li><a href="{{ url_for('user', menu='likes', page = pagination.next_num) }}" aria-label="Next">&raquo;</a></li>
+                        {% else %}
+                            <li class="disabled"><a href="{{ url_for('user', menu='likes', page = pagination.next_num) }}" aria-label="Next">&raquo;</a></li>
+                        {% endif %}
+                  </ul>
+                </nav>
+            </div>
+        {% else %}
+            <p class="nodata">您未约看过任何房源</p>
+            <img class="nodatapic" src="{{ url_for('static', filename="imgs/nodata.png") }}">
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('#views').addClass('active');
+        $('.tpl-left-nav-link-list').siblings('.tpl-left-nav-sub-menu').slideToggle(80)
+            .end()
+            .find('.tpl-left-nav-more-ico').toggleClass('tpl-left-nav-more-ico-rotate');
+        // 点击侧边导航下拉菜单
+        $('.tpl-left-nav-link-list').on('click', function () {
+            $(this).siblings('.tpl-left-nav-sub-menu').slideToggle(80)
+                .end()
+                .find('.tpl-left-nav-more-ico').toggleClass('tpl-left-nav-more-ico-rotate');
+        });
+    </script>
+{% endblock %}

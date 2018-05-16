@@ -1,0 +1,476 @@
+{% extends 'base.html' %}
+
+{% block head %}
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/detail.css") }}"/>
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- flexslider -->
+    <script defer src="{{ url_for('static', filename="js/jquery.flexslider.js") }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/flexslider.css") }}"/>
+    <!--BMap-->
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/api?v=2.0&ak=fBhGDAqrLEEuGAD2coI7GXlLqwmFU0f5"></script>
+{% endblock %}
+{% block title %}
+    房屋详情
+{% endblock %}
+
+{% block main %}
+    <div class="content_box">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- 路径栏  -->
+                    <div class="dreamcrub">
+                        <ul class="breadcrumbs">
+                            <li class="home">
+                                <a href="{{ url_for('index') }}" title="返回地图找房">地图找房</a>&nbsp;
+                                <span>&gt;</span>
+                            </li>
+                            <li class="home">&nbsp;
+                                {{ house.district }}
+                                <span>&gt;</span>&nbsp;
+                            </li>
+                            <li class="home">&nbsp;
+                                {{ house.area }}
+                                <span>&gt;</span>&nbsp;
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <!-- 房屋详情 -->
+                    <div class="singel_right">
+                        <!-- 图片展示 -->
+                        <div class="labout span_1_of_a1">
+                            <!-- 大图 -->
+                            <div id="slider" class="flexslider">
+                                <ul class="slides">
+                                    {% for pic in house.pics %}
+                                        <li>
+                                            <img src="{{ pic.pic }}">
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <!-- 缩略图nav -->
+                            <div id="carousel" class="flexslider">
+                                <ul class="slides">
+                                    {% for pic in house.pics %}
+                                        <li>
+                                            <img src="{{ pic.pic }}">
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- 房屋信息 -->
+                        <div class="cont1 span_2_of_a1 simpleCart_shelfItem">
+                            <h1>{{ house.housetitle }}</h1>
+                            <ul class="rating">
+                                <li>[ {{ house.district }} | {{ house.area }} | {{ house.street }}
+                                    | {{ house.community }} ]
+                                </li>
+                                <div class="clearfix"></div>
+                            </ul>
+                            <h3 class="houseprice">{{ house.prices[0].payrent }}
+                                元/{{ house.prices[0].payname.replace("付", "") }}</h3>
+                            <p class="dtitle"><i class="fas fa-cogs"></i>&emsp;&nbsp;房屋配置&emsp;&nbsp;<i
+                                    class="fas fa-cogs"></i></p>
+                            <ul class="config">
+                                <li>&nbsp;&nbsp;<i
+                                        class="fas fa-angle-right"></i>&nbsp;&nbsp;面积:&nbsp;&nbsp;{{ house.housearea }}
+                                    ㎡
+                                </li>
+                                <li>&nbsp;&nbsp;<i
+                                        class="fas fa-angle-right"></i>&nbsp;&nbsp;朝向:&nbsp;&nbsp;{{ house.housedirect }}
+                                </li>
+                                <li>&nbsp;&nbsp;<i
+                                        class="fas fa-angle-right"></i>&nbsp;&nbsp;户型:&nbsp;&nbsp;{{ house.househall }}
+                                </li>
+                                <li>&nbsp;&nbsp;<i
+                                        class="fas fa-angle-right"></i>&nbsp;&nbsp;楼层:&nbsp;&nbsp;{{ house.housefloor }}
+                                </li>
+                                <li>&nbsp;&nbsp;<i
+                                        class="fas fa-angle-right"></i>&nbsp;&nbsp;出租类型:&nbsp;&nbsp;{{ house.housetype }}
+                                </li>
+                                {% if house.bathroom == 1 %}
+                                    <li>&nbsp;&nbsp;<i class="fas fa-angle-right"></i>&nbsp;&nbsp;独立卫生间&nbsp;&nbsp;<i
+                                            class="fas fa-check"></i></li>
+                                {% endif %}
+                                {% if house.balcony == 1 %}
+                                    <li>&nbsp;&nbsp;<i class="fas fa-angle-right"></i>&nbsp;&nbsp;独立阳台&nbsp;&nbsp;<i
+                                            class="fas fa-check"></i></li>
+                                {% endif %}
+                            </ul>
+                            <div class="infobtn">
+                                <button type="button" class="btn btn-danger" id="yykf" style="width:350px"></button>
+                                <button type="button" class="btn btn-warning" id="scfy"></button>
+                                <div class="man">
+                                    <div class="tel">
+                                        <span class="icon"></span><i class="fas fa-phone-volume"></i>&emsp;8888 6688
+                                    </div>
+                                    <div class="zoInfo">
+                                        <div class="img"><img src="{{ url_for('static',filename="imgs/manager.png") }}">
+                                        </div>
+                                        <div class="txt"><span class="icon yinLeft"></span>
+                                            <p>忙乱的工作之余，最需要的是一处让人舒心的住所；我是史宽，以专业、专注的态度，倾心服务！</p>
+                                            <p style="float: right">-- JRoom管家</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <!-- 更多信息 -->
+                    <div name="prices" style="width: 750px">
+                        <p style="margin-top: 1.5em"><i class="fas fa-hand-holding-usd"></i>&emsp;付款方式</p>
+                        <hr class="style-one">
+                        <br>
+                        <table class="tab_list table table-striped" style="color: #666;font-size: 15px">
+                            <tr>
+                                <th>方式</th>
+                                <th>租金</th>
+                                <th>押金</th>
+                                <th>服务费</th>
+                            </tr>
+                            {% for price in house.prices %}
+                                <tr>
+                                    <td>{{ price.payname }}</td>
+                                    <td>￥ {{ price.payrent }}/{{ price.payname.replace("付","") }}</td>
+                                    <td>￥ {{ price.paydeposit }}</td>
+                                    <td>￥ {{ price.payservice }}/年</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                    <div name="trans" style="width: 750px">
+                        <p style="margin-top: 1.5em"><i class="fas fa-bus"></i>&emsp;路线规划</p>
+                        <hr class="style-one">
+                        <br>
+                        <div id="mapBox"></div>
+                        <div id="route">
+                            <ul class="nav nav-tabs">
+                                <li role="presentation" id="start" class="active" style="font-size: 14px"><a>从此房源出发</a>
+                                </li>
+                                <li role="presentation" id="end" style="font-size: 14px"><a>到此房源去</a></li>
+                            </ul>
+                            <form class="form-inline">
+                                <div class="form-group" id="adddiv">
+                                    <input type="text" class="form-control" id="address" placeholder="请输入您的终点">
+                                </div>
+                                <button type="button" class="btn btn-default rbtn" id="bus"
+                                        style="background-color:#df4782;color:white">公交
+                                </button>
+                                <button type="button" class="btn btn-default rbtn" id="car">驾车</button>
+                                <button type="button" class="btn btn-success" id="search"><i class="fas fa-search"></i>&nbsp;路线查询</button>
+                            </form>
+                            <div id="resRoute" style="height: auto;width: 750px;border-top: 1px solid #ccc"></div>
+                            <div id="resPanel"
+                                 style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>
+                        </div>
+                    </div>
+                    <div name="moreinfo" style="width: 750px">
+                        <p><i class="fas fa-warehouse"></i>&emsp;关于此房源</p>
+                        <hr class="style-one">
+                        <br>
+                        <div style="width: 750px">
+                            <table class="tab_list table table-striped" style="color: #666;font-size: 15px">
+                                <tr>
+                                    <td width="100">房屋编号</td>
+                                    <td>{{ house.houseID }}</td>
+                                </tr>
+                                <tr>
+                                    <td>房屋周边</td>
+                                    <td>{{ house.housearound }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <br><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function () {
+            // flexslider
+            // The slider being synced must be initialized first
+            $('#carousel').flexslider({
+                animation: "slide",
+                controlNav: false,
+                animationLoop: false,
+                slideshow: false,
+                itemWidth: 150,
+                itemMargin: 5,
+                asNavFor: '#slider'
+            });
+
+            $('#slider').flexslider({
+                animation: "slide",
+                controlNav: false,
+                animationLoop: false,
+                slideshow: false,
+                sync: "#carousel"
+            });
+
+            // 预约看房、收藏房源 按钮显示
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('detail' , houseid = house.houseID) }}',
+                data: {
+                    type: 'btn'
+                },
+                success: function (data) {
+                    console.log(data);
+                    $('#yykf').empty();
+                    $('#scfy').empty();
+                    if (data == "nologin") {
+                        item = '<i class="far fa-eye" id="iyykf"></i>&nbsp;&nbsp;我要看房';
+                        $('#yykf').append(item);
+                        item = '<i class="far fa-star" id="iscfy"></i>&nbsp;&nbsp;收藏房源';
+                        $('#scfy').append(item);
+                    }
+                    else if (data == "unrentable") {
+                        $('#yykf').remove();
+                        $('#scfy').remove();
+                        item = '<div style="background-color: white;margin-bottom: 10px;font-weight:bolder;font-size:17px">\n' +
+                            '    <span style="background-color: white;color: red">该房源已售出</span>\n' +
+                            '</div>';
+                        $('.man').before(item);
+                    }
+                    else {
+                        if (data["yykf"] == "yes") {
+                            item = '<i class="fas fa-eye" id="iyykf"></i>&nbsp;&nbsp;已约看';
+                            $('#yykf').append(item);
+                        }
+                        else {
+                            item = '<i class="far fa-eye" id="iyykf"></i>&nbsp;&nbsp;我要看房';
+                            $('#yykf').append(item);
+                        }
+                        if (data["scfy"] == "yes") {
+                            item = '<i class="fas fa-star" id="iscfy"></i>&nbsp;&nbsp;已收藏';
+                            $('#scfy').append(item);
+                        }
+                        else {
+                            item = '<i class="far fa-star" id="iscfy"></i>&nbsp;&nbsp;收藏房源';
+                            $('#scfy').append(item);
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    {# 预约看房 #}
+    <script>
+        $('#yykf').click(function () {
+            var is = $('#iyykf').attr("class");
+            // 未预约, 点击预约
+            if (is == "far fa-eye") {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('detail' , houseid = house.houseID) }}',
+                    data: {
+                        type: 'yykf'
+                    },
+                    success: function (data) {
+                        if (data == "nologin") {
+                            window.location.href = "{{ url_for('login') }}"
+                        }
+                        if (data == "toosoon") {
+                            alert("您已约看过该房源，\n请至少一周后再次申请约看")
+                        }
+                        if (data == "ok") {
+                            $('#yykf').empty();
+                            item = '<i class="fas fa-eye" id="iyykf"></i>&nbsp;&nbsp;已预约';
+                            $('#yykf').append(item);
+                        }
+                    }
+                });
+            }
+            // 已预约, 点击取消预约
+            if (is == "fas fa-eye") {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('detail' , houseid = house.houseID) }}',
+                    data: {
+                        type: 'noyykf'
+                    },
+                    success: function (data) {
+                        if (data == "nologin") {
+                            window.location.href = "{{ url_for('login') }}"
+                        }
+                        if (data == "ok") {
+                            $('#yykf').empty();
+                            item = '<i class="far fa-eye" id="iyykf"></i>&nbsp;&nbsp;预约看房';
+                            $('#yykf').append(item);
+                        }
+                    }
+                });
+            }
+        });
+        $('#scfy').click(function () {
+            var is = $('#iscfy').attr("class");
+            // 未收藏，点击收藏
+            if (is == "far fa-star") {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('detail' , houseid = house.houseID) }}',
+                    data: {
+                        type: 'scfy'
+                    },
+                    success: function (data) {
+                        if (data == "nologin") {
+                            window.location.href = "{{ url_for('login') }}"
+                        }
+                        if (data == "ok") {
+                            $('#scfy').empty();
+                            var item = '<i class="fas fa-star" id="iscfy"></i>&nbsp;&nbsp;已收藏';
+                            $('#scfy').append(item);
+                        }
+                    }
+                });
+            }
+            // 已收藏，点击取消收藏
+            if (is == "fas fa-star") {
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('detail' , houseid = house.houseID) }}',
+                    data: {
+                        type: 'noscfy'
+                    },
+                    success: function (data) {
+                        $('#scfy').empty();
+                        var item = '<i class="far fa-star" id="iscfy"></i>&nbsp;&nbsp;收藏房源';
+                        $('#scfy').append(item);
+                    }
+                });
+            }
+
+        });
+    </script>
+    {# 地图路线规划 #}
+    <script>
+        var map = new BMap.Map("mapBox", {enableMapClick: false});
+        var housepoint = new BMap.Point({{ house.lng }}, {{ house.lat }});
+        map.centerAndZoom(housepoint, 15);
+        map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+        var houseMarker = new BMap.Marker(housepoint);  // 创建标注
+        map.addOverlay(houseMarker);  // 将标注添加到地图中
+
+        //自动提示输入框
+        $('#start').click(function () {
+            $('#end').attr('class', '');
+            $('#start').attr('class', 'active');
+            $('#address').attr('placeholder', '请输入您的终点');
+            $('#adddiv').attr('class','form-group');
+        });
+        $('#end').click(function () {
+            $('#start').attr('class', '');
+            $('#end').attr('class', 'active');
+            $('#address').attr('placeholder', '请输入您的起点');
+            $('#adddiv').attr('class','form-group');
+        });
+        var ac = new BMap.Autocomplete({
+            "input": "address",
+            "location": map
+        });
+        ac.addEventListener("onhighlight", function (e) {  //鼠标放在下拉列表上的事件
+            var str = "";
+            var _value = e.fromitem.value;
+            var value = "";
+            if (e.fromitem.index > -1) {
+                value = _value.province + _value.city + _value.district + _value.street + _value.business;
+            }
+            str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+            value = "";
+            if (e.toitem.index > -1) {
+                _value = e.toitem.value;
+                value = _value.province + _value.city + _value.district + _value.street + _value.business;
+            }
+            str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+            G("resPanel").innerHTML = str;
+        });
+        var myValue;
+        ac.addEventListener("onconfirm", function (e) {    //鼠标点击下拉列表后的事件
+            var _value = e.item.value;
+            myValue = _value.province + _value.city + _value.district + _value.street + _value.business;
+            G("resPanel").innerHTML = "onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+            setRoute();
+        });
+
+        function G(id) {
+            return document.getElementById(id);
+        }
+
+        // 选择路线
+        $('#bus').click(function () {
+            $('#bus').css("background-color", "#df4782");
+            $('#bus').css("color", "white");
+            $('#car').css("background-color", "#fff");
+            $('#car').css("color", "#333");
+        });
+        $('#car').click(function () {
+            $('#car').css("background-color", "#df4782");
+            $('#car').css("color", "white");
+            $('#bus').css("background-color", "#fff");
+            $('#bus').css("color", "#333");
+        });
+        function setRoute() {
+            map.clearOverlays();    //清除地图上所有覆盖物
+            // 创建地址解析器实例
+            var myGeo = new BMap.Geocoder();
+            var address = $('#address').val();
+            if(address == ""){
+                $('#adddiv').attr('class','form-group has-error');
+                return;
+            }
+            myGeo.getPoint(address, function (point) {
+                if (point) {
+                    var start, end;
+                    if ($('#start').attr('class') == 'active') {
+                        start = housepoint;
+                        end = point;
+                    } else {
+                        start = point;
+                        end = housepoint;
+                    }
+                    console.log($('#bus').css('color'));
+                    // 公交路线
+                    if ($('#bus').css('color') == "rgb(255, 255, 255)") {
+                        var transit = new BMap.TransitRoute(map, {
+                            renderOptions: {
+                                map: map,
+                                panel: "resRoute",
+                                autoViewport: true
+                            }
+                        });
+                        transit.search(start, end);
+                    }
+                    // 驾车路线
+                    else {
+                        var driving = new BMap.DrivingRoute(map, {
+                            renderOptions: {
+                                map: map,
+                                panel: "resRoute",
+                                autoViewport: true
+                            }
+                        });
+                        driving.search(start, end);
+                    }
+                } else {
+                    alert("您选择地址没有解析到结果!");
+                }
+            }, "北京市");
+        }
+        $('#search').click(function () {
+            setRoute();
+        });
+    </script>
+{% endblock %}

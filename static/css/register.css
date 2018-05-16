@@ -1,0 +1,47 @@
+#header > .content > .right {
+    float: right;
+    list-style: none;
+    font-size: 14px;
+    padding-top: 15px;
+}
+
+.single{
+    width: 530px;
+    margin: 0 auto;
+}
+
+.single img{
+    height: 200px;
+    margin-top: 15px;
+    margin-left: 150px;
+}
+
+.single h3 {
+    color: #DF4782;
+    font-size: 3em;
+    font-weight: bold;
+    padding-bottom: 0.5em;
+    text-align: center;
+}
+
+.single p{
+    text-align: left;
+}
+
+.radio > label{
+    padding-right: 30px;
+}
+
+.form-horizontal .form-group {
+    margin: 0 0 15px 0;
+}
+
+.sexlabel{
+    font-family:  "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #333;
+}
+input[type="button"]{
+    width: 100%;
+}

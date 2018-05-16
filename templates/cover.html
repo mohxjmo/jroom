@@ -1,0 +1,228 @@
+{# @Time    : 2018/5/15 14:30 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <title>JRoom</title>
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <link href="{{ url_for('static', filename="css/cover/animate.min.css") }}" rel="stylesheet">
+	<link href="{{ url_for('static', filename="css/cover/main.css") }}" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/cover/main.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/cover/wow.min.js')}}"></script>
+</head>
+<body>
+    <!-- nav -->
+	<header id="header">
+        <div class="navbar navbar-inverse" role="banner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{{ url_for('cover') }}">
+                    	<h1>
+                            <img src="{{ url_for('static', filename="imgs/logo_pic_big.png") }}" style="height: 60px" alt="logo">
+                            <img src="{{ url_for('static', filename="imgs/logo_word.png") }}" style="height: 30px" alt="logo">
+                        </h1>
+                    </a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="active"><a href="{{ url_for('cover') }}" style="font-weight:800;font-size: 16px">JRoom</a></li>
+                        <li><a href="#" style="font-weight: 500;font-size: 16px">业务体系</a></li>
+                        <li><a href="#" style="font-weight: 500;font-size: 16px">核心功能</a></li>
+                        <li><a href="#" style="font-weight: 500;font-size: 16px">房源数据</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- flash -->
+    <section id="home-slider" style="margin-top: 80px">
+        <div class="container">
+            <div class="row">
+                <div class="main-slider">
+                    <div class="slide-text">
+                        <h1>JRoom -- 租房找房网站</h1>
+                        <p>门外是人声喧闹、其乐融融的俗世生活图景，<br>关上自家的门就进入了幽静清爽的独享世界。<br>JRoom始终为你用心打造精品,<br>将所有复杂略去，只保留质感非凡的自然风格！</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-common">开始租房找房之旅</a>
+                    </div>
+                    <img src="{{ url_for('static', filename="imgs/cover/hill.png") }}" class="slider-hill" alt="slider image">
+                    <img src="{{ url_for('static', filename="imgs/cover/house.png") }}" class="slider-house" alt="slider image">
+                    <img src="{{ url_for('static', filename="imgs/cover/sun.png") }}" class="slider-sun" alt="slider image">
+                    <img src="{{ url_for('static', filename="imgs/cover/birds1.png") }}" class="slider-birds1" alt="slider image">
+                    <img src="{{ url_for('static', filename="imgs/cover/birds2.png") }}" class="slider-birds2" alt="slider image">
+                </div>
+            </div>
+        </div>
+        <div class="preloader"><i class="fa fa-sun-o fa-spin"></i></div>
+    </section>
+    <!-- 业务体系 -->
+    <section id="clients" style="padding:0">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="clients text-center wow fadeInUp" data-wow-duration="500ms" data-wow-delay="300ms" style="margin: 270px 0 100px 0">
+                        <h1 class="title">业务体系</h1>
+                        <p>线上结合线下</p>
+                        <p><img src="{{ url_for('static', filename="imgs/cover/clients.png") }}" class="img-responsive" alt=""></p>
+                    </div>
+                    <div class="clients-logo wow fadeIn" data-wow-duration="1000ms" data-wow-delay="600ms" style="margin-bottom: 100px">
+                        <div class="col-xs-3 col-sm-2">
+                            <img src="{{ url_for('static', filename="imgs/cover/client1.png") }}" class="img-responsive" alt="">
+                            <p>租房</p>
+                        </div>
+                        <div class="col-xs-3 col-sm-2">
+                            <img src="{{ url_for('static', filename="imgs/cover/client2.png") }}" class="img-responsive" alt="">
+                            <p>房源浏览</p>
+                        </div>
+                        <div class="col-xs-3 col-sm-2">
+                            <img src="{{ url_for('static', filename="imgs/cover/client3.png") }}" class="img-responsive" alt="">
+                            <p>售房</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- 华丽丽的分割层 -->
+    <section id="action" class="responsive">
+        <div class="vertical-center">
+             <div class="container">
+                <div class="row">
+                    <div class="action take-tour">
+                        <div class="col-sm-7 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                            <h1 class="title">完善的业务体系，可靠的数据</h1>
+                            <p>为您提供最可靠的服务</p>
+                        </div>
+                        <div class="col-sm-5 text-center wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                            <div class="tour-button">
+                                <a href="{{ url_for('index') }}" class="btn btn-common">TAKE THE TOUR</a>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--核心功能-->
+    <section id="features">
+        <div class="container">
+            <div class="row">
+                <div class="single-features">
+                    <div class="col-sm-5 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <img src="{{ url_for('static', filename="imgs/cover/image1.png") }}" class="img-responsive" alt="">
+                    </div>
+                    <div class="col-sm-6 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <h2>地图找房</h2>
+                        <P>Pork belly leberkas cow short ribs capicola pork loin. Doner fatback frankfurter jerky meatball pastrami bacon tail sausage. Turkey fatback ball tip, tri-tip tenderloin drumstick salami strip steak.</P>
+                    </div>
+                </div>
+                <div class="single-features">
+                    <div class="col-sm-6 col-sm-offset-1 align-right wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <h2>路线规划</h2>
+                        <P>Mollit eiusmod id chuck turducken laboris meatloaf pork loin tenderloin swine. Pancetta excepteur fugiat strip steak tri-tip. Swine salami eiusmod sint, ex id venison non. Fugiat ea jowl cillum meatloaf.</P>
+                    </div>
+                    <div class="col-sm-5 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <img src="{{ url_for('static', filename="imgs/cover/image2.png") }}" class="img-responsive" alt="">
+                    </div>
+                </div>
+                <div class="single-features">
+                    <div class="col-sm-5 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <img src="{{ url_for('static', filename="imgs/cover/image3.png") }}" class="img-responsive" alt="">
+                    </div>
+                    <div class="col-sm-6 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <h2>房源详请浏览</h2>
+                        <P>Ut officia cupidatat anim excepteur fugiat cillum ea occaecat rump pork chop tempor. Ut tenderloin veniam commodo. Shankle aliquip short ribs, chicken eiusmod exercitation shank landjaeger spare ribs corned beef.</P>
+                    </div>
+                </div>
+                <div class="single-features">
+                    <div class="col-sm-6 col-sm-offset-1 align-right wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <h2>发布房源</h2>
+                        <P>Mollit eiusmod id chuck turducken laboris meatloaf pork loin tenderloin swine. Pancetta excepteur fugiat strip steak tri-tip. Swine salami eiusmod sint, ex id venison non. Fugiat ea jowl cillum meatloaf.</P>
+                    </div>
+                    <div class="col-sm-5 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <img src="{{ url_for('static', filename="imgs/cover/image1.png") }}" class="img-responsive" alt="">
+                    </div>
+                </div>
+                <div class="single-features">
+                    <div class="col-sm-5 wow fadeInLeft" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <img src="{{ url_for('static', filename="imgs/cover/image2.png") }}" class="img-responsive" alt="">
+                    </div>
+                    <div class="col-sm-6 wow fadeInRight" data-wow-duration="500ms" data-wow-delay="300ms">
+                        <h2>个人信息记录</h2>
+                        <P>Ut officia cupidatat anim excepteur fugiat cillum ea occaecat rump pork chop tempor. Ut tenderloin veniam commodo. Shankle aliquip short ribs, chicken eiusmod exercitation shank landjaeger spare ribs corned beef.</P>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- 房源数据 -->
+    <section id="services">
+        <div class="container">
+            <div class="row">
+                <div class="clients text-center wow fadeInUp" data-wow-duration="500ms" data-wow-delay="300ms" style="margin: 100px 0 100px 0">
+                    <h1 class="title">房源数据</h1>
+                    <p>线上结合线下</p>
+                </div>
+                <div class="col-sm-4 text-center padding wow fadeIn" data-wow-duration="1000ms" data-wow-delay="300ms">
+                    <div class="single-service">
+                        <div class="wow scaleIn" data-wow-duration="500ms" data-wow-delay="300ms">
+                            <img src="{{ url_for('static',filename="imgs/cover/icon1.png") }}" alt="">
+                        </div>
+                        <h2>Incredibly Responsive</h2>
+                        <p>Ground round tenderloin flank shank ribeye. Hamkevin meatball swine. Cow shankle beef sirloin chicken ground round.</p>
+                    </div>
+                </div>
+                <div class="col-sm-4 text-center padding wow fadeIn" data-wow-duration="1000ms" data-wow-delay="600ms">
+                    <div class="single-service">
+                        <div class="wow scaleIn" data-wow-duration="500ms" data-wow-delay="600ms">
+                            <img src="{{ url_for('static',filename="imgs/cover/icon2.png") }}" alt="">
+                        </div>
+                        <h2>Superior Typography</h2>
+                        <p>Hamburger ribeye drumstick turkey, strip steak sausage ground round shank pastrami beef brisket pancetta venison.</p>
+                    </div>
+                </div>
+                <div class="col-sm-4 text-center padding wow fadeIn" data-wow-duration="1000ms" data-wow-delay="900ms">
+                    <div class="single-service">
+                        <div class="wow scaleIn" data-wow-duration="500ms" data-wow-delay="900ms">
+                            <img src="{{ url_for('static',filename="imgs/cover/icon3.png") }}" alt="">
+                        </div>
+                        <h2>Swift Page Builder</h2>
+                        <p>Venison tongue, salami corned beef ball tip meatloaf bacon. Fatback pork belly bresaola tenderloin bone pork kevin shankle.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- footer -->
+    <footer id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 text-center bottom-separator">
+                    <img src="{{ url_for('static', filename="imgs/cover/under.png") }}" class="img-responsive inline" alt="">
+                </div>
+                <div class="col-sm-12">
+                    <div class="copyright-text text-center">
+                        <p>&copy; WHUT 2018. All Rights Reserved.</p>
+                        <p>Designed by HuXiaJie</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+

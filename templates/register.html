@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    注册
+{% endblock %}
+
+{% block head %}
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/register.css") }}"/>
+{% endblock %}
+
+{% block main %}
+    <div class="single">
+        <img src="{{ url_for('static', filename="imgs/logo_pic_big.png") }}">
+        <p><i class="fas fa-exclamation-circle"></i>&nbsp;&nbsp;请注意：带星号为必填项目</p>
+        <form class="form-horizontal">
+            <div class="form-group" id="namediv">
+                <label for="username">*昵&nbsp;&nbsp;称：</label>
+                <input type="text" class="form-control" id="username" placeholder="请输入您的昵称">
+                <span id="nameblock" class="help-block"></span>
+            </div>
+            <div class="form-group" id="teldiv">
+                <label for="usertel">*手机号码：</label>
+                <input type="text" class="form-control" id="usertel" placeholder="请输入11位手机号码">
+                <span id="telblock" class="help-block"></span>
+            </div>
+            <div class="form-group" id="psw1div">
+                <label for="userpsw1">*密&nbsp;&nbsp;码：</label>
+                <input type="password" class="form-control" id="userpsw1" placeholder="请输入6位以上的密码">
+                <span id="psw1block" class="help-block"></span>
+            </div>
+            <div class="form-group" id="psw2div">
+                <label for="userpsw2">*确认密码：</label>
+                <input type="password" class="form-control" id="userpsw2" placeholder="请输入确认密码">
+                <span id="psw2block" class="help-block"></span>
+            </div>
+            <div class="form-group">
+                <div class="radio">
+                    <label class="sexlabel" style="font-weight: 700;padding-left: 0;padding-right: 10px">*性&nbsp;&nbsp;别：</label>
+                    <label>
+                        <input type="radio" name="sex" value="1" checked>我是男生
+                    </label>
+                    <label>
+                        <input type="radio" name="sex" value="0">我是女生
+                    </label>
+                </div>
+            </div>
+            <div class="form-group" id="emaildiv">
+                <label for="useremail">Email：</label>
+                <input type="email" class="form-control" id="useremail" placeholder="请输入Email">
+                <span id="emailblock" class="help-block"></span>
+            </div>
+            <div class="form-group" id="jobdiv">
+                <label for="userjob">职&nbsp;&nbsp;业：</label>
+                <input type="text" class="form-control" id="userjob" placeholder="请输入描述你的职业">
+                <span id="jobblock" class="help-block"></span>
+            </div>
+            <input type="button" class="btn btn-primary" id="register" value="注&nbsp;&nbsp;册"></input>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('#username').blur(function () {
+            var username = $('#username').val();
+            if(username==""){
+                $('#namediv').attr("class", "form-group has-error");
+                $('#nameblock').text("昵称不可为空");
+            }
+            else if(username.length > 20){
+                $('#namediv').attr("class", "form-group has-error");
+                $('#nameblock').text("昵称长度必须小于20个字符");
+            }
+            else{
+                $('#namediv').attr("class", "form-group has-success");
+                $('#nameblock').text("");
+            }
+        });
+        $('#usertel').blur(function () {
+            var usertel = $('#usertel').val();
+            if(usertel==""){
+                $('#teldiv').attr("class", "form-group has-error");
+                $('#telblock').text("手机号码不可为空");
+            }
+            else if(usertel.length != 11 || !/^1\d+$/.test(usertel)){
+                $('#teldiv').attr("class", "form-group has-error");
+                $('#telblock').text("输入合法手机号码不合法");
+            }
+            else{
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('register') }}',
+                    data: {
+                        type: 'usertel',
+                        usertel: usertel
+                    },
+                    dataType: 'json',  //指希望服务端返回json格式的数据
+                    success: function (data) { //data是json格式的数据
+                        if(data == true){
+                            $('#teldiv').attr("class", "form-group has-success");
+                            $('#telblock').text("");
+                        }
+                        else{
+                            $('#teldiv').attr("class", "form-group has-error");
+                            $('#telblock').text("该手机号已被注册");
+                        }
+                    },
+                    error: function (xhr, type) {
+                        console.log("error");
+                    }
+                });
+            }
+        });
+        $('#userpsw1').blur(function () {
+            var userpsw1 = $('#userpsw1').val();
+            if(userpsw1==""){
+                $('#psw1div').attr("class", "form-group has-error");
+                $('#psw1block').text("密码不可为空");
+            }
+            else if(userpsw1.length < 6 || userpsw1.length > 10){
+                $('#psw1div').attr("class", "form-group has-error");
+                $('#psw1block').text("请输入6-10位密码");
+            }
+            else{
+                $('#psw1div').attr("class", "form-group has-success");
+                $('#psw1block').text("");
+            }
+        });
+        $('#userpsw2').blur(function () {
+            var userpsw1 = $('#userpsw1').val();
+            var userpsw2 = $('#userpsw2').val();
+            if(userpsw1==""){
+                $('#psw1div').attr("class", "form-group has-error");
+                $('#psw2div').attr("class", "form-group has-error");
+                $('#psw1block').text("密码不可为空");
+            }
+            else if(userpsw2==""){
+                $('#psw2div').attr("class", "form-group has-error");
+                $('#psw2block').text("请确认密码");
+            }
+            else if(userpsw1 != userpsw2){
+                $('#psw1div').attr("class", "form-group has-error");
+                $('#psw2div').attr("class", "form-group has-error");
+                $('#psw1block').text("两次密码输入不一致");
+                $('#psw2block').text("两次密码输入不一致");
+            }
+            else{
+                $('#psw1div').attr("class", "form-group has-success");
+                $('#psw2div').attr("class", "form-group has-success");
+                $('#psw1block').text("");
+                $('#psw2block').text("");
+            }
+        });
+        $('#useremail').blur(function () {
+            var useremail = $('#useremail').val();
+            var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+            if( useremail ==""){
+                $('#emaildiv').attr("class", "form-group");
+                $('#emailblock').text("");
+            }
+            else if(!reg.test(useremail)){
+                $('#emaildiv').attr("class", "form-group has-error");
+                $('#emailblock').text("请输入合法的电子邮件地址");
+            }
+            else{
+                $('#emaildiv').attr("class", "form-group has-success");
+                $('#emailblock').text("");
+            }
+        });
+        $('#userjob').blur(function () {
+            var userjob = $('#userjob').val();
+            if( userjob ==""){
+                $('#jobdiv').attr("class", "form-group");
+                $('#jobblock').text("");
+            }
+            else{
+                $('#jobdiv').attr("class", "form-group has-success");
+                $('#jobblock').text("");
+            }
+        });
+        $('#register').click(function () {
+            var username = $('#username').val();
+            var usertel = $('#usertel').val();
+            var userpsw1 = $('#userpsw1').val();
+            var userpsw2 = $('#userpsw2').val();
+            var usersex = $("input[name='sex']:checked").val();
+            var useremail = $('#useremail').val();
+            var userjob = $('#userjob').val();
+            if(username==""){
+                $('#namediv').attr("class", "form-group has-error");
+                $('#nameblock').text("昵称不可为空");
+            }
+            else if(usertel == ""){
+                $('#teldiv').attr("class", "form-group has-error");
+                $('#telblock').text("手机号码不可为空");
+            }
+            else if(userpsw1 == ""){
+                $('#psw1div').attr("class", "form-group has-error");
+                $('#psw1block').text("密码不可为空");
+            }
+            else if(userpsw2 == ""){
+                $('#psw2div').attr("class", "form-group has-error");
+                $('#psw2block').text("请确认密码");
+            }
+            else{
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('register') }}',
+                    data: {
+                        type: 'register',
+                        username: username,
+                        usertel: usertel,
+                        userpsw: userpsw2,
+                        usersex: usersex,
+                        useremail: useremail,
+                        userjob: userjob
+                    },
+                    dataType: 'json',  //指希望服务端返回json格式的数据
+                    success: function (data) { //data是json格式的数据
+                        if(data == 'success'){
+                            window.location.href = "{{ url_for('index') }}"
+                        }else{
+                            console.log("error");
+                        }
+                    },
+                    error: function (xhr, type) {
+                        console.log("error");
+                    }
+                });
+            }
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,290 @@
+{# @Time    : 2018/5/9 20:50 #}
+{# @Author  : huxiajie  #}
+{% extends 'user.html' %}
+
+{% block right %}
+    <div class="mainRight info">
+        <div class="title">我的信息</div>
+        <form class="form-horizontal infoform">
+            <div class="form-group" id="avatardiv">
+                <label class="col-sm-2 control-label">头像</label>
+                <div class="col-sm-5" id="avatar">
+                    {% if user.useravatar =="" %}
+                        <img src="{{ url_for('static', filename='imgs/avatar.png') }}" class="img-circle">
+                    {% else %}
+                        <img src="{{ user.useravatar }}" class="img-circle">
+                    {% endif %}
+                    <button type="button" class="btn btn-info">上传头像</button>
+                </div>
+            </div>
+            <div class="form-group" id="namediv">
+                <label class="col-sm-2 control-label">昵称</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="name" placeholder="{{ user.username }}" value="{{ user.username }}">
+                    <span id="nameblock" class="help-block"></span>
+                </div>
+            </div>
+            <div class="form-group" id="teldiv">
+                <label class="col-sm-2 control-label">手机号码</label>
+                <div class="col-sm-3">
+                    <p class="form-control-static">{{ user.usertel }}</p>
+                </div>
+            </div>
+            <div class="form-group" id="pswdiv">
+                <label class="col-sm-2 control-label">密码</label>
+                <div class="col-sm-3">
+                    <a id="pswchange">修改密码?</a>
+                </div>
+            </div>
+            <div class="form-group" id="emaildiv">
+                <label class="col-sm-2 control-label">邮箱</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="email" placeholder="{{ user.useremail }}" value="{{ user.useremail }}">
+                    <span id="emailblock" class="help-block"></span>
+                </div>
+            </div>
+            <div class="form-group" id="jobdiv">
+                <label class="col-sm-2 control-label">职业</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control" id="job" placeholder="{{ user.userjob }}" value="{{ user.userjob }}">
+                    <span id="jobblock" class="help-block"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-10" style="padding-top: 20px">
+                    <input type="button" class="btn btn-danger" id="save" value="保存修改">
+                    <input type="button" class="btn btn-default" id="cancel" style="margin-left: 15px" value="取消修改">
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('#info').addClass('active');
+        // 展示侧边导航下拉菜单
+        $('.tpl-left-nav-link-list').siblings('.tpl-left-nav-sub-menu').slideToggle(80)
+            .end()
+            .find('.tpl-left-nav-more-ico').toggleClass('tpl-left-nav-more-ico-rotate');
+        // 点击侧边导航下拉菜单
+        $('.tpl-left-nav-link-list').on('click', function () {
+            $(this).siblings('.tpl-left-nav-sub-menu').slideToggle(80)
+                .end()
+                .find('.tpl-left-nav-more-ico').toggleClass('tpl-left-nav-more-ico-rotate');
+        });
+    </script>
+    <script>
+        $('#save').click(function () {
+            var name = $('#name').val();
+            var nameflag = false;
+            if(name==""){
+                $('#namediv').attr("class", "form-group has-error");
+                $('#nameblock').text("昵称不可为空");
+
+            }
+            else if(name.length > 20){
+                $('#namediv').attr("class", "form-group has-error");
+                $('#nameblock').text("昵称长度必须小于20个字符");
+            }
+            else{
+                $('#namediv').attr("class", "form-group has-success");
+                $('#nameblock').text("");
+                nameflag = true;
+            }
+            var email = $('#email').val();
+            var emailflag = false;
+            var reg = /^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/;
+            if(email=="未绑定" || email==""){
+                $('#emaildiv').attr("class", "form-group");
+                $('#email').val("未绑定");
+                emailflag = true;
+                email = ""
+            }
+            else if(!reg.test(email)){
+                $('#emaildiv').attr("class", "form-group has-error");
+                $('#emailblock').text("请输入合法的电子邮件地址");
+            }
+            else{
+                $('#emaildiv').attr("class", "form-group has-success");
+                $('#emailblock').text("");
+                emailflag = true;
+            }
+            var job = $('#job').val();
+            var jobflag= false;
+            if(job=="未填写" || job==""){
+                $('#jobdiv').attr("class", "form-group");
+                $('#job').val("未填写");
+                jobflag = true;
+                job = "";
+            }
+            else if(job.length > 20){
+                $('#jobdiv').attr("class", "form-group has-error");
+                $('#jobblock').text("请在20个字符内描述您的职位");
+            }
+            else{
+                $('#jobdiv').attr("class", "form-group has-success");
+                $('#jobblock').text("");
+                jobflag = true;
+            }
+            if(nameflag==true && emailflag==true && jobflag==true){
+                if (email=="未绑定") { email=""; }
+                if(job=="未填写") { job=""; }
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('user', menu="info") }}',
+                    data: {
+                        type: "info",
+                        name: name,
+                        email: email,
+                        job: job
+                    },
+                    dataType: 'json',  //指希望服务端返回json格式的数据
+                    success: function (data) { //data是json格式的数据
+                        $('#namediv').attr("class", "form-group");
+                        $('#emaildiv').attr("class", "form-group");
+                        $('#jobdiv').attr("class", "form-group");
+                        $('#name').val(data["name"]);
+                        $('#email').val(data["email"]);
+                        $('#job').val(data["job"]);
+                    },
+                    error: function (xhr, type) {
+                        console.log("error");
+                    }
+                });
+            }
+        });
+        $('#cancel').click(function () {
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('user', menu="info") }}',
+                data: {
+                    type: "cancel"
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    $('#namediv').attr("class", "form-group");
+                    $('#emaildiv').attr("class", "form-group");
+                    $('#jobdiv').attr("class", "form-group");
+                    $('#nameblock').text("");
+                    $('#emailblock').text("");
+                    $('#jobblock').text("");
+                    $('#name').val(data["name"]);
+                    $('#email').val(data["email"]);
+                    $('#job').val(data["job"]);
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+        });
+        $('#pswchange').click(function () {
+            var item = '<div class="form-group" id="pswolddiv">\n' +
+                       '    <label class="col-sm-2 control-label"></label>\n' +
+                       '    <div class="col-sm-3">\n' +
+                       '        <input type="password" class="form-control" id="pswold" placeholder="请输入原始密码" onblur="blurpswold()">\n' +
+                       '        <span id="pswoldblock" class="help-block"></span>\n' +
+                       '    </div>\n' +
+                       '</div>\n' +
+                       '<div class="form-group" id="pswnewdiv">\n' +
+                       '    <label class="col-sm-2 control-label"></label>\n' +
+                       '    <div class="col-sm-3">\n' +
+                       '        <input type="password" class="form-control" id="pswnew" placeholder="请输入新密码" onblur="blurpswnew()">\n' +
+                       '        <span id="pswnewblock" class="help-block"></span>\n' +
+                       '    </div>\n' +
+                       '</div>\n' +
+                       '<div class="form-group" id="pswbtn">\n' +
+                       '    <div class="col-sm-3" style="margin-left: 250px">\n' +
+                       '        <input type="button" class="btn btn-danger" id="pswyes" value="确认修改" onclick="clickpswyes()">\n' +
+                       '        <input type="button" class="btn btn-default" id="pswno" style="margin-left: 15px" value="取消修改" onclick="clickpswno()">\n' +
+                       '    </div>\n' +
+                       '</div>';
+            $('#pswdiv').after(item);
+            }
+        );
+        function blurpswold() {
+            var pswold = {{ user.userpsw }};
+            if($('#pswold').val() == ""){
+                $('#pswolddiv').attr('class', 'form-group has-error');
+                $('#pswoldblock').text("原始密码不能为空");
+            }
+            else if(pswold == $('#pswold').val()){
+                $('#pswolddiv').attr('class', 'form-group has-success');
+                $('#pswoldblock').text("");
+            }
+            else{
+                $('#pswolddiv').attr('class', 'form-group has-error');
+                $('#pswoldblock').text("原始密码输入错误");
+            }
+        }
+        function blurpswnew() {
+            var pswold = $('#pswold').val();
+            var pswnew = $('#pswnew').val();
+            if(pswold==""){
+                $('#pswolddiv').attr('class', 'form-group has-error');
+                $('#pswoldblock').text("原始密码不能为空");
+            }
+            else if(pswnew == ""){
+                $('#pswnewdiv').attr('class', 'form-group has-error');
+                $('#pswnewblock').text("新密码不能为空");
+            }
+            else if(pswold == pswnew){
+                $('#pswnewdiv').attr('class', 'form-group has-error');
+                $('#pswnewblock').text("新密码与原始密码一致");
+            }
+            else if(pswnew.length < 6 || pswnew.length > 10){
+                $('#pswnewdiv').attr('class', 'form-group has-error');
+                $('#pswnewblock').text("请输入6-10位密码");
+            }
+            else{
+                $('#pswnewdiv').attr('class', 'form-group has-success');
+                $('#pswnewblock').text("");
+            }
+        }
+        function clickpswyes() {
+            var pswold = $('#pswold').val();
+            var pswnew = $('#pswnew').val();
+            if(pswold==""){
+                $('#pswolddiv').attr('class', 'form-group has-error');
+                $('#pswoldblock').text("原始密码不能为空");
+            }
+            else if(pswnew == ""){
+                $('#pswnewdiv').attr('class', 'form-group has-error');
+                $('#pswnewblock').text("新密码不能为空");
+            }
+            else if(pswold == pswnew){
+                $('#pswnewdiv').attr('class', 'form-group has-error');
+                $('#pswnewblock').text("新密码与原始密码一致");
+            }
+            else if(pswnew.length < 6 || pswnew.length > 10){
+                $('#pswnewdiv').attr('class', 'form-group has-error');
+                $('#pswnewblock').text("请输入6-10位密码");
+            }
+            else{
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('user', menu="info") }}',
+                    data: {
+                        type: "psw",
+                        psw: pswnew
+                    },
+                    dataType: 'json',  //指希望服务端返回json格式的数据
+                    success: function (data) { //data是json格式的数据
+                        alert("密码修改成功！");
+                        $('#pswolddiv').remove();
+                        $('#pswnewdiv').remove();
+                        $('#pswbtn').remove();
+                    },
+                    error: function (xhr, type) {
+                        console.log("error");
+                    }
+                });
+            }
+        }
+        function clickpswno() {
+            $('#pswolddiv').remove();
+            $('#pswnewdiv').remove();
+            $('#pswbtn').remove();
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,53 @@
+{# @Time    : 2018/4/28 15:54 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <title>{% block title %}{% endblock %} - JRoom</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div id="header">
+        <div class="content">
+            <img class="logopic" src="{{ url_for('static', filename='imgs/logo_pic.png') }}">
+            <img class="logoword" src="{{ url_for('static', filename='imgs/logo_word.png') }}">
+            <ul class="right">
+                {% block more %}{% endblock %}
+                <li><a href="{{ url_for('posthouse') }}" target="_blank"><i class="fas fa-cloud-upload-alt"></i>&nbsp;&nbsp;发布房源</a></li>
+                {% if not session.get('usertel') %}
+                    <li><a href="{{ url_for('login') }}"><i class="far fa-user"></i>&nbsp;&nbsp;登录</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('user', menu='info') }}" target="_blank" id="nameheader"><i class="far fa-user"></i>&nbsp;&nbsp;个人中心</a></li>
+                    <li><a href="#" id="logout"><i class="fas fa-sign-out-alt"></i>&nbsp;&nbsp;退出</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    {% block main %}{% endblock %}
+</body>
+</html>
+<script>
+    $('#logout').click(function () {
+        $.ajax({
+            type: 'POST',
+            url: '{{ url_for('logout') }}',
+            success: function (data) {
+                if (data == true) {
+                    location.reload();
+                }else {
+                    console.log('error');
+                }
+            },
+            error: function (xhr, type) {
+                console.log("error");
+            }
+        });
+    });
+</script>
+{% block script %}{% endblock %}

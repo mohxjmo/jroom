@@ -1,0 +1,33 @@
+{# @Time    : 2018/5/7 10:36 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+<div class="flexslider">
+    <ul class="slides">
+        {% for pic in house.pics %}
+            <li>
+                <img src="{{ pic.pic }}">
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{# flexslider #}
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $('.flexslider').flexslider({
+                animation: 'slide',                 // 必备参数，自动滑动
+                animationLoop: true,           // 是否循环滑动，默认为 true
+                itemWidth: 100,                  // 定义每个 item 宽度，单位为 px，默认为 100%
+                itemMargin: 0,                     // 定义每个 item margin，默认为 0
+                controlNav: false,                // 是否显示滑动控制小圆点，默认为 true
+                directionNav: false,               // 是否显示左右滑动控制控件，默认为 true
+                slideshowSpeed: 2000,        // 每次自动滑动间隔时间，默认为 7000，单位为 ms
+                animationSpeed: 500           // 手动点击滑动时间，默认为 600，单位为 ms
+            });
+        });
+    </script>
+</body>
+</html>

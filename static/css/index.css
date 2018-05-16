@@ -1,0 +1,23 @@
+/* filter条件筛选部分 */
+#filter {
+    height: 50px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+.filtercontainer {
+    padding: 5px 15px 5px 45px;
+    height: 100%;
+}
+
+.filtercontainer > select > option {
+    font-size: 14px;
+}
+/* mapBox */
+#mapBox {
+    width: 80%;
+    height: 847px;
+    float: right;
+    padding: 0;
+    margin: 0;
+}

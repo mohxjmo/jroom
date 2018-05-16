@@ -1,0 +1,591 @@
+{# @Time    : 2018/4/28 10:53 #}
+{# @Author  : huxiajie  #}
+{% extends 'base.html' %}
+
+{% block title %}地图找房{% endblock %}
+{% block head %}
+    <!--BaiduMap-->
+    <script type="text/javascript"
+            src="http://api.map.baidu.com/api?v=2.0&ak=fBhGDAqrLEEuGAD2coI7GXlLqwmFU0f5"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <!-- pure -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/pure-min.css') }}" integrity="sha384-" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/email.css') }}">
+{% endblock %}
+
+{% block main %}
+    <!-- 条件筛选 -->
+    <div id="filter">
+        <form name="filter" class="pure-form"> <!-- 单行 -->
+            <div class="filtercontainer">
+                <select id="renttype">
+                    <option value="0" disabled selected>出租方式</option>
+                    <option value="1">合租</option>
+                    <option value="2">整租</option>
+                </select>
+                <select id="price">
+                    <option value="0 0" disabled selected>价格</option>
+                    <option value="0 1500">1500以下</option>
+                    <option value="1500 2500">1500 - 2500</option>
+                    <option value="2500 4000">2500 - 4000</option>
+                    <option value="4000 6000">4000 - 6000</option>
+                    <option value="6000 8000">6000 - 8000</option>
+                    <option value="8000 0">8000以上</option>
+                </select>
+                <select id="area">
+                    <option value="0 0" disabled selected>面积</option>
+                    <option value="0 40">40㎡以下</option>
+                    <option value="40 60">40 - 60㎡</option>
+                    <option value="60 80">60 - 80㎡</option>
+                    <option value="80 100">80 - 100㎡</option>
+                    <option value="100 0">100㎡以上</option>
+                </select>
+                <select id="direct">
+                    <option disabled selected>朝向</option>
+                    <option value="南">南</option>
+                    <option value="北">北</option>
+                    <option value="东">东</option>
+                    <option value="西">西</option>
+                    <option value="南北">南北</option>
+                </select>
+                <label for="bathroom">
+                    <input id="bathroom" type="checkbox"> 独立卫生间
+                </label>
+                <label for="balcony">
+                    <input id="balcony" type="checkbox"> 独立阳台
+                </label>
+                <button type="reset" class="button-reset pure-button">清除全部条件&nbsp;&nbsp;<i class="fas fa-times"></i></button>
+            </div>
+        </form>
+    </div>
+    <!-- 房屋列表 -->
+    <div id="layout" class="pure-g" >
+        <div id="nav" class="pure-u" style="width:0"></div>
+        <div id="list" class="pure-u-1" style="height: 847px"></div>
+    </div>
+    <!-- 百度地图 -->
+    <div id="mapBox"></div>
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript">
+        // 初始化地图
+        var map = new BMap.Map("mapBox", {enableMapClick: false, minZoom: 11, maxZoom: 18});
+        map.centerAndZoom(new BMap.Point(116.404, 39.915), 12);
+        map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+        addSearchControl();
+
+        var districtCount = {{ districtCount|tojson }};
+        var areaCount = {{ areaCount|tojson }};
+        var communityCount = {{ communityCount|tojson }};
+        var expensives = {{ expensives|tojson }};
+        var myGeo = new BMap.Geocoder();
+        // 添加区级覆盖物
+        for (var dis in districtCount) {
+             addOverlays(dis, districtCount[dis]);
+        }
+        // 添加房屋列表
+        for (var i in expensives) {
+            item = '<div class="email-item pure-g">\n' +
+                   '    <div class="pure-u">\n' +
+                   '        <img alt="房屋图片" class="email-avatar" src="' + expensives[i]["pic"] + '">\n' +
+                   '    </div>\n' +
+                   '    <div class="pure-u-3-4" style="width:165px">\n' +
+                   '        <h5 class="email-subject title"><a href="/detail/' + expensives[i]["houseID"] +'" target="_blank">' + expensives[i]["title"] + '</a></h5>\n' +
+                   '        <p class="email-desc desc">\n' + expensives[i]["area"] + '㎡&nbsp;|&nbsp' + expensives[i]["floor"] + '层&nbsp;|&nbsp;' + expensives[i]["hall"] + '</p>\n' +
+                   '        <h4 class="email-subject price"><span class="type">' + '[' + expensives[i]["type"] + ']</span>' + '&nbsp;&nbsp;¥' + expensives[i]["price"] + '&nbsp;元/' + expensives[i]["priceunit"].replace("付", "") + '</h4>'+
+                   '    </div>\n' +
+                   '</div>';
+            $('#list').append(item);
+        }
+        // zoom
+        var zoomed;
+        map.addEventListener("zoomstart", function () {
+            zoomed = map.getZoom()
+        });
+        map.addEventListener("zoomend", function () {
+            zoom = map.getZoom();
+            console.log(zoom);
+            //[11, 13] 一级：按区 district; [14, 15] 二级：按街道 area; >=16 三级：显示标注/覆盖物
+            if (zoom <= 13 && zoomed > 13) {
+                map.clearOverlays();
+                for (var dis in districtCount) {
+                     addOverlays(dis, districtCount[dis]);
+                }
+            }
+            if (14 <= zoom && zoom <= 15) {
+                if (zoomed <= 13 || zoomed >= 16) {
+                    map.clearOverlays();
+                    for (var area in areaCount) {
+                         addOverlays(area, areaCount[area]);
+                    }
+                }
+            }
+            if (zoom >= 16 && zoomed < 16) {
+                map.clearOverlays();
+                addElements();
+            }
+        });
+        // dragend
+        map.addEventListener("dragend", function () {
+            if (this.getZoom() >= 16) {
+                addElements();
+            }
+        });
+        // 地图加载完毕事件, 每次加载完毕都去获得新的房屋列表
+        map.addEventListener("tilesloaded", getlist);
+        function getlist() {
+            var bounds = map.getBounds();
+            var zoom = map.getZoom();
+            var allOverlay = map.getOverlays();
+            var bathroom = 0;
+            var balcony = 0;
+            // view_district
+            if( zoom == 13){
+                var set = new Set();
+                for(var overlay in allOverlay){
+                    if (bounds.containsPoint(allOverlay[overlay].getPosition()) == false) {
+                        continue;
+                    }
+                    var content = allOverlay[overlay]['content'].split('<br>')[0];
+                    set.add(content);
+                }
+                var districts = Array.from(set);
+                console.log("获得当前视野内的districts: ", districts);
+                if($("#bathroom").is(':checked')){
+                    bathroom = 1;
+                }
+                if($("#balcony").is(':checked')){
+                    balcony = 1;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('index') }}',
+                    data: {
+                        type: 'view_district',
+                        districts: districts,
+                        renttype: $("#renttype").find("option:selected").text(),
+                        price: $("#price").find("option:selected").val(),
+                        area: $("#area").find("option:selected").val(),
+                        direct: $("#direct").find("option:selected").text(),
+                        bathroom: bathroom,
+                        balcony: balcony
+                    },
+                    dataType: 'json',  //指希望服务端返回json格式的数据
+                    success: function (data) { //data是json格式的数据
+                        $('#list div').remove();
+                        console.log(data.length);
+                        if (data.length == 0){
+                            item = '<div>\n' +
+                                   '    <center><img src="http://static8.ziroom.com/phoenix/pc/map/2017/img/none.png"></center>\n' +
+                                   '    <p class="email-desc desc nonehouse">地球上没有您找的房源</p>\n' +
+                                   '</div>';
+                            $('#list').append(item);
+                            return;
+                        }
+                        for (var i in data) {
+                            item = '<div class="email-item pure-g">\n' +
+                                   '    <div class="pure-u">\n' +
+                                   '        <img alt="房屋图片" class="email-avatar" src="' + data[i]["pic"] + '">\n' +
+                                   '    </div>\n' +
+                                   '    <div class="pure-u-3-4" style="width:165px">\n' +
+                                   '        <h5 class="email-subject title"><a href="/detail/' + data[i]["houseID"] +'" target="_blank">' + data[i]["title"] + '</a></h5>\n' +
+                                   '        <p class="email-desc desc">' + data[i]["area"] + '㎡&nbsp;|&nbsp' + data[i]["floor"] + '层&nbsp;|&nbsp;' + data[i]["hall"] + '</p>\n' +
+                                   '        <h4 class="email-subject price"><span class="type">' + '[' + data[i]["type"] + ']</span>' + '&nbsp;&nbsp;¥' + data[i]["price"] + '&nbsp;元/' + data[i]["priceunit"].replace("付", "") + '</h4>'+
+                                   '    </div>\n' +
+                                   '</div>';
+                            $('#list').append(item);
+                        }
+                    },
+                    error: function (xhr, type) {
+                        console.log("error");
+                    }
+                });
+            }
+            // view_area
+            if(14 <= zoom && zoom <= 15){
+                var set = new Set();
+                for(var overlay in allOverlay){
+                    if (bounds.containsPoint(allOverlay[overlay].getPosition()) == false) {
+                        continue;
+                    }
+                    var content = allOverlay[overlay]['content'].split('<br>')[0];
+                    set.add(content);
+                }
+                var areas = Array.from(set);
+                console.log("获得当前视野内的areas: ", areas);
+                if($("#bathroom").is(':checked')){
+                    bathroom = 1;
+                }
+                if($("#balcony").is(':checked')){
+                    balcony = 1;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('index') }}',
+                    data: {
+                        type: 'view_area',
+                        areas: areas,
+                        renttype: $("#renttype").find("option:selected").text(),
+                        price: $("#price").find("option:selected").val(),
+                        area: $("#area").find("option:selected").val(),
+                        direct: $("#direct").find("option:selected").text(),
+                        bathroom: bathroom,
+                        balcony: balcony
+                    },
+                    dataType: 'json',  //指希望服务端返回json格式的数据
+                    success: function (data) { //data是json格式的数据
+                        $('#list div').remove();
+                        console.log(data.length);
+                        if (data.length == 0){
+                            item = '<div>\n' +
+                                   '    <center><img src="http://static8.ziroom.com/phoenix/pc/map/2017/img/none.png"></center>\n' +
+                                   '    <p class="email-desc desc nonehouse">地球上没有您找的房源</p>\n' +
+                                   '</div>';
+                            $('#list').append(item);
+                            return;
+                        }
+                        for (var i in data) {
+                            item = '<div class="email-item pure-g">\n' +
+                                   '    <div class="pure-u">\n' +
+                                   '        <img alt="房屋图片" class="email-avatar" src="' + data[i]["pic"] + '">\n' +
+                                   '    </div>\n' +
+                                   '    <div class="pure-u-3-4" style="width:165px">\n' +
+                                   '        <h5 class="email-subject title"><a href="/detail/' + data[i]["houseID"] +'" target="_blank">' + data[i]["title"] + '</a></h5>\n' +
+                                   '        <p class="email-desc desc">' + data[i]["area"] + '㎡&nbsp;|&nbsp' + data[i]["floor"] + '层&nbsp;|&nbsp;' + data[i]["hall"] + '</p>\n' +
+                                   '        <h4 class="email-subject price"><span class="type">' + '[' + data[i]["type"] + ']</span>' + '&nbsp;&nbsp;¥' + data[i]["price"] + '&nbsp;元/' + data[i]["priceunit"].replace("付", "") + '</h4>'+
+                                   '    </div>\n' +
+                                   '</div>';
+                            $('#list').append(item);
+                        }
+                    },
+                    error: function (xhr, type) {
+                        console.log("error");
+                    }
+                });
+            }
+            //  view_community
+            if( zoom >= 16) {
+                var set = new Set();
+                for (var overlay in allOverlay) {
+                    try{
+                        if (bounds.containsPoint(new BMap.Point(allOverlay[overlay]["_point"]["lng"], allOverlay[overlay]["_point"]["lat"])) == false) {
+                            continue;
+                        }
+                        var content = allOverlay[overlay]['_text'].split(' ')[0];
+                        set.add(content);
+                    }
+                    catch (err){
+                        console.log("搜索框事件" + err.message);
+                    }
+                }
+                var communities = Array.from(set);
+                console.log("获得当前视野内的communities: ", communities);
+                if($("#bathroom").is(':checked')){
+                    bathroom = 1;
+                }
+                if($("#balcony").is(':checked')){
+                    balcony = 1;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ url_for('index') }}',
+                    data: {
+                        type: 'view_community',
+                        communities: communities,
+                        renttype: $("#renttype").find("option:selected").text(),
+                        price: $("#price").find("option:selected").val(),
+                        area: $("#area").find("option:selected").val(),
+                        direct: $("#direct").find("option:selected").text(),
+                        bathroom: bathroom,
+                        balcony: balcony
+                    },
+                    dataType: 'json',  //指希望服务端返回json格式的数据
+                    success: function (data) { //data是json格式的数据
+                        $('#list div').remove();
+                        if (data.length == 0){
+                            item = '<div>\n' +
+                                   '    <center><img src="http://static8.ziroom.com/phoenix/pc/map/2017/img/none.png"></center>\n' +
+                                   '    <p class="email-desc desc nonehouse">地球上没有您找的房源</p>\n' +
+                                   '</div>';
+                            $('#list').append(item);
+                            return;
+                        }
+                        console.log(data.length);
+                        for (var i in data) {
+                            item = '<div class="email-item pure-g">\n' +
+                                   '    <div class="pure-u">\n' +
+                                   '        <img alt="房屋图片" class="email-avatar" src="' + data[i]["pic"] + '">\n' +
+                                   '    </div>\n' +
+                                   '    <div class="pure-u-3-4" style="width:165px">\n' +
+                                   '        <h5 class="email-subject title"><a href="/detail/' + data[i]["houseID"] +'" target="_blank">' + data[i]["title"] + '</a></h5>\n' +
+                                   '        <p class="email-desc desc">\n' + data[i]["area"] + '㎡&nbsp;|&nbsp' + data[i]["floor"] + '层&nbsp;|&nbsp;' + data[i]["hall"] + '</p>\n' +
+                                   '        <h4 class="email-subject price"><span class="type">' + '[' + data[i]["type"] + ']</span>' + '&nbsp;&nbsp;¥' + data[i]["price"] + '&nbsp;元/' + data[i]["priceunit"].replace("付", "") + '</h4>'+
+                                   '    </div>\n' +
+                                   '</div>';
+                            $('#list').append(item);
+                        }
+                    },
+                    error: function (xhr, type) {
+                        console.log("error");
+                    }
+                });
+            }
+        }
+        // 添加dis、area覆盖物
+        function addOverlays(addr, num) {
+            //console.log(" addOverlays");
+            myGeo.getPoint(addr, function (point) {
+                if (point) {
+                    var number;
+                    if (num > 1000) {
+                        number = "1000+";
+                    } else if (num > 500) {
+                        number = "500+";
+                    } else if (num > 100) {
+                        number = "100+";
+                    } else {
+                        number = num.toString();
+                    }
+                    // 添加label
+                    var label = new BMap.Label(addr + "<br>" + number, {position: new BMap.Point(point.lng, point.lat)});
+                    label.setStyle({
+                        color: "#FFF",
+                        fontSize: "14px",
+                        fontFamily: "微软雅黑",
+                        textAlign: "center",
+                        lineHeight: "20px",
+                        background: "url(../static/imgs/circle.png)",
+                        width: "78px",
+                        height: "78px",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "center",
+                        borderStyle: "none",
+                        paddingTop: "43px"
+                    });
+                    map.addOverlay(label);
+                    label.addEventListener("click", function () {
+                        map.setCenter(new BMap.Point(point.lng, point.lat));
+                        map.zoomIn();
+                        //map.panTo();
+                    });
+                }
+            }, "北京市");
+        }
+        // 添加房屋级复杂覆盖物
+        function addElements() {
+            // 获取地图区域的边界
+            var bounds = map.getBounds();
+
+            for (var add in communityCount) {
+                pt = new BMap.Point(communityCount[add]['lng'], communityCount[add]['lat']);
+                if (bounds.containsPoint(pt) == false) {
+                    continue;
+                }
+
+                // 复杂的自定义覆盖物
+                function ComplexCustomOverlay(point, text) {
+                    this._point = point;
+                    this._text = text;
+                }
+
+                ComplexCustomOverlay.prototype = new BMap.Overlay();
+                ComplexCustomOverlay.prototype.initialize = function (map) {
+                    this._map = map;
+                    var div = this._div = document.createElement("div");
+                    div.style.position = "absolute";
+                    div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+                    div.style.backgroundColor = "#EE5D5B";
+                    div.style.border = "1px solid #BC3B3A";
+                    div.style.color = "white";
+                    div.style.height = "18px";
+                    div.style.padding = "2px";
+                    div.style.lineHeight = "18px";
+                    div.style.whiteSpace = "nowrap";
+                    div.style.MozUserSelect = "none";
+                    div.style.fontSize = "13px";
+                    var span = this._span = document.createElement("span");
+                    div.appendChild(span);
+                    span.appendChild(document.createTextNode(this._text));
+                    var that = this;
+                    var arrow = this._arrow = document.createElement("div");
+                    arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+                    arrow.style.position = "absolute";
+                    arrow.style.width = "11px";
+                    arrow.style.height = "10px";
+                    arrow.style.top = "22px";
+                    arrow.style.left = "10px";
+                    arrow.style.overflow = "hidden";
+                    div.appendChild(arrow);
+
+                    div.onmouseover = function () {
+                        this.style.backgroundColor = "#6BADCA";
+                        this.style.borderColor = "#0000ff";
+                        arrow.style.backgroundPosition = "0px -20px";
+                    };
+
+                    div.onmouseout = function () {
+                        this.style.backgroundColor = "#EE5D5B";
+                        this.style.borderColor = "#BC3B3A";
+                        arrow.style.backgroundPosition = "0px 0px";
+                    };
+
+                    div.onclick = function () {
+                        console.log("获得点击的小区" + that._text);
+                        var bathroom = 0;
+                        var balcony = 0;
+                        if($("#bathroom").is(':checked')){
+                            bathroom = 1;
+                        }
+                        if($("#balcony").is(':checked')){
+                            balcony = 1;
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ url_for('index') }}',
+                            data: {
+                                type: 'click_community',
+                                community: that._text,
+                                renttype: $("#renttype").find("option:selected").text(),
+                                price: $("#price").find("option:selected").val(),
+                                area: $("#area").find("option:selected").val(),
+                                direct: $("#direct").find("option:selected").text(),
+                                bathroom: bathroom,
+                                balcony: balcony
+                            },
+                            //dataType: 'json',  //指希望服务端返回json格式的数据
+                            success: function (data) { //data是json格式的数据
+                                $('#list div').remove();
+                                if (data.length == 0){
+                                    item = '<div>\n' +
+                                           '    <center><img src="http://static8.ziroom.com/phoenix/pc/map/2017/img/none.png"></center>\n' +
+                                           '    <p class="email-desc desc nonehouse">地球上没有您找的房源</p>\n' +
+                                           '</div>';
+                                    $('#list').append(item);
+                                    return;
+                                }
+                                for (var i in data) {
+                                    item = '<div class="email-item pure-g">\n' +
+                                           '    <div class="pure-u">\n' +
+                                           '        <img alt="房屋图片" class="email-avatar" src="' + data[i]["pic"] + '">\n' +
+                                           '    </div>\n' +
+                                           '    <div class="pure-u-3-4" style="width:165px">\n' +
+                                           '        <h5 class="email-subject title"><a href="/detail/' + data[i]["houseID"] +'" target="_blank">' + data[i]["title"] + '</a></h5>\n' +
+                                           '        <p class="email-desc desc">\n' + data[i]["area"] + '㎡&nbsp;|&nbsp' + data[i]["floor"] + '层&nbsp;|&nbsp;' + data[i]["hall"] + '</p>\n' +
+                                           '        <h4 class="email-subject price"><span class="type">' + '[' + data[i]["type"] + ']</span>' + '&nbsp;&nbsp;¥' + data[i]["price"] + '&nbsp;元/' + data[i]["priceunit"].replace("付", "") + '</h4>'+
+                                           '    </div>\n' +
+                                           '</div>';
+                                    $('#list').append(item);
+                                }
+
+                            },
+                            error: function (xhr, type) {
+                                console.log("error");
+                            }
+                        });
+                    };
+                    map.getPanes().labelPane.appendChild(div);
+                    return div;
+                };
+                ComplexCustomOverlay.prototype.draw = function () {
+                    var map = this._map;
+                    var pixel = map.pointToOverlayPixel(this._point);
+                    this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+                    this._div.style.top = pixel.y - 30 + "px";
+                };
+                var txt = communityCount[add]['community'] + " " + communityCount[add]['num'] + "套";
+                var myCompOverlay = new ComplexCustomOverlay(pt, txt);
+                map.addOverlay(myCompOverlay);
+            }
+        }
+
+        // 自定义搜索框控件
+        function addSearchControl() {
+            function ZoomControl() {
+                // 设置默认停靠位置和偏移量
+                this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
+                this.defaultOffset = new BMap.Size(20, 10);
+            }
+            ZoomControl.prototype = new BMap.Control();
+            ZoomControl.prototype.initialize = function(map) {
+                // 添加搜索框
+                var div1 = document.createElement("div");
+                div1.style.cursor = "pointer";
+                div1.style.border = "0px";
+                div1.style.backgroundColor = "white";
+                // 添加文字说明
+                var text = div1.appendChild(document.createElement("input"));
+                text.setAttribute("id", "suggestId");
+                text.setAttribute("placeholder", "输入地点进行搜索");
+                text.style.width = "300px";
+                text.style.fontFamily = "sans-serif";
+                text.style.fontSize = "14px";
+                text.style.padding = "0.5em";
+                text.style.border = "1px solid #ccc";
+                text.style.borderRadius = "4px";
+                text.style.boxShadow = "inset 0 1px 3px #ddd;";
+                // 添加提示面板
+                var div2 = document.createElement("div");
+                div2.setAttribute("id", "searchResultPanel");
+                div2.style.border = "1px solid #C0C0C0";
+                div2.style.width = "150px";
+                div2.style.height = "auto";
+                div2.style.display = "none";
+                function G(id) {
+                    return document.getElementById(id);
+                }
+                var ac = new BMap.Autocomplete(    //建立一个自动完成的对象
+                    {"input" : "suggestId"
+                    ,"location" : map
+                });
+
+                ac.addEventListener("onhighlight", function(e) {  //鼠标放在下拉列表上的事件
+                var str = "";
+                    var _value = e.fromitem.value;
+                    var value = "";
+                    if (e.fromitem.index > -1) {
+                        value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+                    }
+                    str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
+
+                    value = "";
+                    if (e.toitem.index > -1) {
+                        _value = e.toitem.value;
+                        value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+                    }
+                    str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
+                    G("searchResultPanel").innerHTML = str;
+                });
+
+                var myValue;
+                ac.addEventListener("onconfirm", function(e) {    //鼠标点击下拉列表后的事件
+                    var _value = e.item.value;
+                    myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
+                    G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
+                    setPlace();
+                });
+
+                function setPlace(){
+                    function myFun(){
+                        map.clearOverlays();
+                        var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
+                        map.centerAndZoom(pp,16);
+                        map.addOverlay(new BMap.Marker(pp));
+                    }
+                    var local = new BMap.LocalSearch(map, { //智能搜索
+                        onSearchComplete: myFun
+                    });
+                    local.search(myValue);
+                }
+                //
+                map.getContainer().appendChild(div1);
+                map.getContainer().appendChild(div2);
+                // 将DOM元素返回
+                return div1;
+            };
+            var myZoomCtrl = new ZoomControl();
+            // 添加到地图当中
+            map.addControl(myZoomCtrl);
+        }
+    </script>
+{% endblock %}

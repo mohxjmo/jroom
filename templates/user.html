@@ -1,0 +1,65 @@
+{# @Time    : 2018/5/7 21:10 #}
+{# @Author  : huxiajie  #}
+{% extends 'base.html' %}
+
+{% block title %}
+    个人中心
+{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/user.css") }}" />
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+{% endblock %}
+
+{% block more %}
+    <li><a href="{{ url_for('index') }}" target="_blank"><i class="fas fa-map-marker-alt"></i>&nbsp;&nbsp;返回地图找房</a></li>
+{% endblock %}
+
+{% block main %}
+    <div class="tpl-page-container tpl-page-header-fixed">
+        <!-- 左侧菜单 -->
+        <div class="tpl-left-nav tpl-left-nav-hover">
+            <div class="tpl-left-nav-title">
+                <i class="fas fa-user-circle"></i>&nbsp;&nbsp;个人中心<br>
+            </div>
+            <div class="tpl-left-nav-list">
+                <ul class="tpl-left-nav-menu">
+                    <li class="tpl-left-nav-item">
+                        <a class="nav-link tpl-left-nav-link-list" id="info" href="{{ url_for('user', menu='info') }}">
+                            <i class="far fa-newspaper"></i><span>&nbsp;我的资料</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a id="likes" class="nav-link tpl-left-nav-link-list" href="{{ url_for('user', menu='likes', page=1) }}">
+                            <i class="far fa-heart"></i><span>&nbsp;&nbsp;我的收藏</span>
+                        </a>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a href="javascript:;" class="nav-link tpl-left-nav-link-list" id="yykf">
+                            <i class="far fa-bookmark"></i><span>&nbsp;&nbsp;&nbsp;我的约看</span>
+                            <i class="am-icon-angle-right tpl-left-nav-more-ico am-fr am-margin-right tpl-left-nav-more-ico-rotate"></i>
+                        </a>
+                        <ul class="tpl-left-nav-sub-menu">
+                            <li>
+                                <a id="yykfEND" href="{{ url_for('user', menu="views", page=1, status='ing') }}" class="">
+                                   <span>&emsp;&nbsp;约看-进行中</span>
+                                </a>
+                                <a id="yykfING" href="{{ url_for('user', menu="views",page=1,status='end') }}" class="">
+                                    <span>&emsp;&nbsp;约看-已完成</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="tpl-left-nav-item">
+                        <a class="nav-link tpl-left-nav-link-list" id="info" href="{{ url_for('user', menu='rents', page=1) }}">
+                            <i class="far fa-file-alt"></i><span>&nbsp;我的合同</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- 右侧组件 -->
+        {% block right %}{% endblock %}
+    </div>
+{% endblock %}
