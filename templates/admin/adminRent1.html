@@ -1,0 +1,233 @@
+{# @Time    : 2018/5/16 15:54 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>后台管理 - JRoom</title>
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/ionicons.min.css") }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/AdminLTE.css") }}">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/_all-skins.min.css") }}">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/morris.css") }}">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/jquery-jvectormap.css") }}">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap-datepicker.min.css") }}">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/daterangepicker.css") }}">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap3-wysihtml5.min.css") }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/user.css") }}" />
+</head>
+<body>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- logo -->
+            <a href="{{ url_for('admin', menu='admin') }}" class="logo">
+                <span class="logo-lg"><b>JRoom</b></span>
+            </a>
+            <nav class="navbar navbar-static-top">
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#"><span class="hidden-xs">管理员界面</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header"></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>发布房源</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='post1',page=1) }}">&emsp;&emsp;委托记录</a></li>
+                            <li><a href="{{ url_for('admin', menu='post2') }}">&emsp;&emsp;发布记录</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='post1',page=1) }}"><i class="far fa-eye"></i><span>房源约看</span></a>
+                    </li>
+                    <li class="active treeview menu-open">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>房源合同</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='rent1',page=1) }}" style="color: #DF4782;">&emsp;&emsp;合同纪录</a></li>
+                            <li><a href="{{ url_for('admin', menu='rent2') }}">&emsp;&emsp;合同签订</a></li>
+                        </ul>
+                    </li>
+                    <li >
+                        <a href="{{ url_for('admin', menu='info') }}"><i class="far fa-user"></i><span>个人资料</span></a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            {% if flag == "yes" %}
+                {# 列表 #}
+                <div id="Div">
+                    <table class="table table-hover" id="likesTable">
+                        <tr>
+                            <th width="80px" style="text-align: center">租约编号</th>
+                            <th style="text-align: center">租约签订时间</th>
+                            <th style="text-align: center">房源编号</th>
+                            <th style="text-align: center">入住时间</th>
+                            <th style="text-align: center">退房时间</th>
+                            <th style="text-align: center">租金</th>
+                            <th style="text-align: center">押金</th>
+                            <th style="text-align: center">服务费</th>
+                            <th style="text-align: center">租户联系方式</th>
+                            <th style="text-align: center">合同状态</th>
+                            <th style="text-align: center">操作</th>
+                        </tr>
+                        {% for rent in rents %}
+                            <tr>
+                                <td style="text-align: center">{{ rent['reID'] }}</td>
+                                <td style="text-align: center">{{ rent['retime'] }}</td>
+                                <td style="text-align: center"><a href="{{ url_for('detail',houseid=rent['houseID'])}}" target="_blank">{{ rent['houseID'] }}</a></td>
+                                <td style="text-align: center">{{rent['checkin'] }}</td>
+                                <td style="text-align: center">{{rent['checkout'] }}</td>
+                                <td style="text-align: center">￥ {{ rent['rerent'] }} /{{ rent['repayment'] }}</td>
+                                <td style="text-align: center">￥ {{ rent['redeposit'] }}</td>
+                                <td style="text-align: center">￥ {{ rent['reservice'] }} /年</td>
+                                <td style="text-align: center">{{ rent['usertel'] }}</td>
+                                <td style="text-align: center">{{ rent['status'] }}</td>
+                                <td style="text-align: center">
+                                    {% if rent['status'] == "进行中"%}
+                                        <input type="button" class="btn btn-danger" onclick="cancelRent($(this))" value="解除租约">
+                                    {% else %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    {# 分页 #}
+                    <nav aria-label="Page navigation" class="text-center">
+                        <ul class="pagination">
+                            {# 上一页 #}
+                            {% if pagination.has_prev %}
+                                <li><a href="{{ url_for('admin', menu='rent1', page = pagination.prev_num) }}" aria-label="Previous">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="{{ url_for('admin', menu='rent1', page = pagination.prev_num) }}" aria-label="Previous">&laquo;</a></li>
+                            {% endif %}
+                            {# 页码 #}
+                            {% for p in pagination.iter_pages() %}
+                                {% if p == pagination.page %}
+                                    <li class="active"><a href="{{ url_for('admin', menu='rent1', page=p) }}">{{ p }}</a></li>
+                                {% else %}
+                                    <li ><a href="{{ url_for('admin', menu='rent1', page=p) }}">{{ p }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {# 下一页 #}
+                            {% if pagination.has_next %}
+                                <li><a href="{{ url_for('admin', menu='rent1', page = pagination.next_num) }}" aria-label="Next">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="{{ url_for('admin', menu='rent1', page = pagination.next_num) }}" aria-label="Next">&raquo;</a></li>
+                            {% endif %}
+                      </ul>
+                    </nav>
+                </div>
+            {% else %}
+                <p class="nodata">没有任何租约记录</p>
+                <img class="nodatapic" src="{{ url_for('static', filename="imgs/nodata.png") }}">
+            {% endif %}
+        </div>
+        <!-- footer -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+              <b>WHUT</b>&emsp;zy1402
+            </div>
+            <strong>Copyright &copy; 2018.02-2018.06 hxj_jessie@163.com.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+      $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- Morris.js charts -->
+    <script src="{{ url_for('static', filename='js/admin/raphael.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/morris.min.js') }}"></script>
+    <!-- Sparkline -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.sparkline.min.js') }}"></script>
+    <!-- jvectormap -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.knob.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ url_for('static', filename='js/admin/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/daterangepicker.js') }}"></script>
+    <!-- datepicker -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap-datepicker.min.js') }}"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap3-wysihtml5.all.min.js') }}"></script>
+    <!-- Slimscroll -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.slimscroll.min.js') }}"></script>
+    <!-- FastClick -->
+    <script src="{{ url_for('static', filename='js/admin/fastclick.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='js/admin/adminlte.min.js') }}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{ url_for('static', filename='js/admin/dashboard.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{{ url_for('static', filename='js/admin/demo.js') }}"></script>
+</body>
+</html>
+<script>
+    function cancelRent(td){
+        var status = td.parent().parent().find('td').eq(9).text();
+        if(status == '进行中'){
+            $.ajax({
+            type: 'POST',
+            url: '{{ url_for('admin', menu='rent1') }}',
+            data: {
+                reid: td.parent().parent().find('td').eq(0).text(),
+                hid: td.parent().parent().find('td').eq(2).text()
+            },
+            dataType: 'json',  //指希望服务端返回json格式的数据
+            success: function (data) { //data是json格式的数据
+                if(data=='success'){
+                    td.parent().parent().find('td').eq(9).text('已结束');
+                    td.parent().parent().find('td').eq(10).empty();
+                }
+            }
+        });
+        }
+        else{
+            alert('改租约已解除！')
+        }
+    }
+</script>

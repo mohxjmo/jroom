@@ -1,0 +1,287 @@
+{# @Time    : 2018/5/16 15:54 #}
+{# @Author  : huxiajie  #}
+{# @Time    : 2018/5/16 15:55 #}
+{# @Author  : huxiajie  #}
+{# @Time    : 2018/5/14 20:55 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>后台管理 - JRoom</title>
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/ionicons.min.css") }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/AdminLTE.css") }}">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/_all-skins.min.css") }}">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/morris.css") }}">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/jquery-jvectormap.css") }}">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap-datepicker.min.css") }}">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/daterangepicker.css") }}">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap3-wysihtml5.min.css") }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/user.css") }}" />
+</head>
+<body>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- logo -->
+            <a href="{{ url_for('admin', menu='admin') }}" class="logo">
+                <span class="logo-lg"><b>JRoom</b></span>
+            </a>
+            <nav class="navbar navbar-static-top">
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#"><span class="hidden-xs">管理员界面</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header"></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>发布房源</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='post1', page=1) }}">&emsp;&emsp;委托记录</a></li>
+                            <li><a href="{{ url_for('admin', menu='post2') }}">&emsp;&emsp;发布记录</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='view', page=1) }}" style="color: #DF4782;"><i class="far fa-eye"></i><span>房源约看</span></a>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>房源合同</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="active"><a href="{{ url_for('admin', menu='rent1',page=1) }}">&emsp;&emsp;合同纪录</a></li>
+                            <li><a href="{{ url_for('admin', menu='rent2') }}">&emsp;&emsp;合同签订</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='info') }}"><i class="far fa-user"></i><span>个人资料</span></a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            {% if flag == "yes" %}
+                {# 列表 #}
+                <div id="Div" style="padding: 10px 25px 0 25px">
+                    <table class="table table-hover" id="likesTable" style="text-align: center;">
+                        <tr>
+                            <th style="text-align: center;width:80px;">约看编号</th>
+                            <th style="text-align: center;width: 100px;">房源编号</th>
+                            <th style="text-align: center;width: 100px;">申请时间</th>
+                            <th style="text-align: center;width: 200px;">约看时间</th>
+                            <th style="text-align: center;width:200px;">完成时间</th>
+                            <th style="text-align: center;width:100px">约看人联系方式</th>
+                            <th style="text-align: center;width:100px">状态</th>
+                        </tr>
+                        {% for view in views %}
+                            <tr>
+                                <td>{{ view['ureID'] }}</td>
+                                <td><a href="{{ url_for('detail',houseid=view['houseID'])}}" target="_blank">{{ view['houseID'] }}</a></td>
+                                <td>{{ view['timeapply'] }}</td>
+                                <td>
+                                    {% if  view['timedeal'] == None %}
+                                        <input type="text" class="date1" placeholder="请确认约看时间" style="width: 140px;height:23px;border: 1px solid #ccc">
+                                        <input type="button" class="btn btn-warning btn-sm" value="确认" onclick="timedeal(deal=$(this), id={{ view['ureID'] }})">
+                                    {% else %}
+                                        {{ view['timedeal'] }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if view['timeend'] == None and view['timedeal'] != None %}
+                                        <input type="text" class="date2" placeholder="请确认约看完成时间" style="width: 140px;height:23px;border: 1px solid #ccc">
+                                        <input type="button" class="btn btn-warning btn-sm" value="确认" onclick="timeend(end=$(this))">
+                                    {% elif view['timeend'] == None and view['timedeal'] == None %}
+                                        请先确认约看时间
+                                    {% else %}
+                                        {{ view['timeend'] }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ view['usertel'] }}</td>
+                                <td>{{ view['urestatus'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    {# 分页 #}
+                    <nav aria-label="Page navigation" class="text-center">
+                        <ul class="pagination">
+                            {# 上一页 #}
+                            {% if pagination.has_prev %}
+                                <li><a href="{{ url_for('admin', menu='view', page = pagination.prev_num) }}" aria-label="Previous">&laquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="{{ url_for('admin', menu='view', page = pagination.prev_num) }}" aria-label="Previous">&laquo;</a></li>
+                            {% endif %}
+                            {# 页码 #}
+                            {% for p in pagination.iter_pages() %}
+                                {% if p == pagination.page %}
+                                    <li class="active"><a href="{{ url_for('admin', menu='view', page=p) }}">{{ p }}</a></li>
+                                {% else %}
+                                    <li ><a href="{{ url_for('admin', menu='view', page=p) }}">{{ p }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {# 下一页 #}
+                            {% if pagination.has_next %}
+                                <li><a href="{{ url_for('admin', menu='view', page = pagination.next_num) }}" aria-label="Next">&raquo;</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="{{ url_for('admin', menu='view', page = pagination.next_num) }}" aria-label="Next">&raquo;</a></li>
+                            {% endif %}
+                      </ul>
+                    </nav>
+                </div>
+            {% else %}
+                <p class="nodata">没有任何约看记录</p>
+                <img class="nodatapic" src="{{ url_for('static', filename="imgs/nodata.png") }}">
+            {% endif %}
+        </div>
+        <!-- footer -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+              <b>WHUT</b>&emsp;zy1402
+            </div>
+            <strong>Copyright &copy; 2018.02-2018.06 hxj_jessie@163.com.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+      $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- Morris.js charts -->
+    <script src="{{ url_for('static', filename='js/admin/raphael.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/morris.min.js') }}"></script>
+    <!-- Sparkline -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.sparkline.min.js') }}"></script>
+    <!-- jvectormap -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.knob.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ url_for('static', filename='js/admin/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/daterangepicker.js') }}"></script>
+    <!-- datepicker -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap-datepicker.min.js') }}"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap3-wysihtml5.all.min.js') }}"></script>
+    <!-- Slimscroll -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.slimscroll.min.js') }}"></script>
+    <!-- FastClick -->
+    <script src="{{ url_for('static', filename='js/admin/fastclick.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='js/admin/adminlte.min.js') }}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{ url_for('static', filename='js/admin/dashboard.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{{ url_for('static', filename='js/admin/demo.js') }}"></script>
+</body>
+</html>
+<script>
+    $('.date1').datepicker({
+      autoclose: true
+    });
+    $('.date2').datepicker({
+      autoclose: true
+    });
+    function timedeal(deal,id) {
+        if(deal.parent().find("input[type='text']").val()==""){
+            alert("请选择时间");
+            return;
+        }
+        var time = deal.parent().find("input[type='text']").val().split('/');
+        var timedeal = time[2]+'-'+time[0]+'-'+time[1];
+        $.ajax({
+            type: 'POST',
+            url: '{{ url_for('admin', menu='view') }}',
+            data: {
+                type: 'timedeal',
+                timedeal: timedeal,
+                id: id
+            },
+            dataType: 'json',  //指希望服务端返回json格式的数据
+            success: function (data) { //data是json格式的数据
+                if(data=='success'){
+                    var td = deal.parent();
+                    var tdnext = deal.parent().parent().find("td").eq(4);
+                    td.empty();
+                    td.text(timedeal);
+                    tdnext.empty();
+                    item = '<input type="text" class="date2" placeholder="请确认约看完成时间" style="width: 140px;height:23px;border: 1px solid #ccc">\n' +
+                           '<input type="button" class="btn btn-warning btn-sm" value="确认" onclick="timeend(end=$(this))">';
+                    tdnext.append(item);
+                }
+            },
+            error: function (xhr, type) {
+                console.log("error");
+            }
+        });
+    }
+    function timeend(end) {
+        if(end.parent().find("input[type='text']").val()==""){
+            alert("请先选择时间");
+            return;
+        }
+        var time = end.parent().find("input[type='text']").val().split('/');
+        var timeend = time[2]+'-'+time[0]+'-'+time[1];
+        var id = end.parent().parent().find('td').eq(0).text();
+        $.ajax({
+            type: 'POST',
+            url: '{{ url_for('admin', menu='view') }}',
+            data: {
+                type: 'timeend',
+                timeend: timeend,
+                id: id
+            },
+            dataType: 'json',  //指希望服务端返回json格式的数据
+            success: function (data) { //data是json格式的数据
+                if(data=='success'){
+                    var td = end.parent();
+                    var tdlast = end.parent().parent().find("td").eq(6);
+                    td.empty();
+                    td.text(timeend);
+                    tdlast.text('已完成约看');
+                }
+            },
+            error: function (xhr, type) {
+                console.log("error");
+            }
+        });
+    }
+</script>

@@ -98,6 +98,7 @@ class Rentrecord(db.Model):
     reservice = db.Column(db.Integer, nullable=False)
     checkin = db.Column(db.Date, nullable=False)
     checkout = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(10), nullable=False)
     # 外码
     usertel = db.Column(db.String(11), db.ForeignKey('user.usertel'), nullable=False)
     houseID = db.Column(db.String(20), db.ForeignKey('house.houseID'), nullable=False)
@@ -110,3 +111,4 @@ class Post(db.Model):
     community = db.Column(db.String(50), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     tel = db.Column(db.String(11), nullable=False)
+    status = db.Column(db.String(10), nullable=False)

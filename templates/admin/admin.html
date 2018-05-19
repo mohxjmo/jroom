@@ -4,10 +4,102 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>后台管理 - JRoom</title>
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/AdminLTE.css") }}">
 </head>
 <body>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- logo -->
+            <a href="{{ url_for('admin', menu='admin') }}" class="logo">
+                <span class="logo-lg"><b>JRoom</b></span>
+            </a>
+            <nav class="navbar navbar-static-top">
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#">
+                                <span class="hidden-xs">管理员界面</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header"></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>发布房源</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='post1',page=1) }}">&emsp;&emsp;委托记录</a></li>
+                            <li><a href="{{ url_for('admin', menu='post2') }}">&emsp;&emsp;发布房源</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='view',page=1) }}"><i class="far fa-eye"></i><span>房源约看</span></a>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>房源合同</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='rent1',page=1) }}">&emsp;&emsp;合同纪录</a></li>
+                            <li><a href="{{ url_for('admin', menu='rent2') }}">&emsp;&emsp;合同签订</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='info') }}"><i class="far fa-user"></i><span>个人资料</span></a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <img src="{{ url_for('static', filename="imgs/logo.png") }}" style="margin: 50px 0 0 100px;width: 500px">
+            <span style="font-size: 7em;font-family: Cursive;padding-left:50px;vertical-align: bottom">- 后台管理</span>
+        </div>
+        <!-- footer -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+              <b>WHUT</b>&emsp;zy1402
+            </div>
+            <strong>Copyright &copy; 2018.02-2018.06 hxj_jessie@163.com.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+      $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='js/admin/adminlte.min.js') }}"></script>
 
 </body>
 </html>

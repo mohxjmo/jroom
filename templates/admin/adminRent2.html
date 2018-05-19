@@ -1,0 +1,513 @@
+{# @Time    : 2018/5/16 15:54 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>后台管理 - JRoom</title>
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/ionicons.min.css") }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/AdminLTE.css") }}">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/_all-skins.min.css") }}">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/morris.css") }}">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/jquery-jvectormap.css") }}">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap-datepicker.min.css") }}">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/daterangepicker.css") }}">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap3-wysihtml5.min.css") }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/user.css") }}" />
+</head>
+<body>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- logo -->
+            <a href="{{ url_for('admin', menu='admin') }}" class="logo">
+                <span class="logo-lg"><b>JRoom</b></span>
+            </a>
+            <nav class="navbar navbar-static-top">
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#"><span class="hidden-xs">管理员界面</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header"></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>发布房源</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='post1',page=1) }}">&emsp;&emsp;委托记录</a></li>
+                            <li><a href="{{ url_for('admin', menu='post2') }}">&emsp;&emsp;发布记录</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='view',page=1) }}"><i class="far fa-eye"></i><span>房源约看</span></a>
+                    </li>
+                    <li class="active treeview menu-open">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>房源合同</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='rent1',page=1) }}">&emsp;&emsp;合同纪录</a></li>
+                            <li><a href="{{ url_for('admin', menu='rent2') }}" style="color: #DF4782;">&emsp;&emsp;合同签订</a></li>
+                        </ul>
+                    </li>
+                    <li >
+                        <a href="{{ url_for('admin', menu='info') }}"><i class="far fa-user"></i><span>个人资料</span></a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <form class="form-horizontal" action="" method="post" id="renthouse" style="width: 600px;margin-bottom: 0">
+                <br><br>
+                <div class="form-group" id="houseiddiv">
+                    <label>房源编号：</label>
+                    <input type="text" class="form-control" id="houseid" name="houseid" placeholder="请输入房源编号">
+                    <span id="houseidblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="teldiv">
+                    <label>租户电话：</label>
+                    <input type="text" class="form-control" id="tel" name="tel" placeholder="请输入租户电话">
+                    <span id="telblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="checkindiv">
+                    <label>入住时间：</label>
+                    <input type="text" class="date" id="checkin" placeholder="请选择入住时间" style="width: 140px;height:23px;border: 1px solid #ccc">
+                    <span id="checkinblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="checkoutdiv">
+                    <label>退房时间：</label>
+                    <input type="text" class="date" id="checkout" placeholder="请选择退房时间" style="width: 140px;height:23px;border: 1px solid #ccc">
+                    <span id="checkoutblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="paymentdiv">
+                    <label>付款方式：</label>
+                    <select id="payment">
+                        <option disabled selected>付款方式</option>
+                        <option value ="天付">天付</option>
+                        <option value ="月付">月付</option>
+                        <option value ="季付">季付</option>
+                        <option value ="半年付">半年付</option>
+                        <option value ="年付">年付</option>
+                    </select>
+                    <span id="paymentblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="rentdiv">
+                    <label>租金：</label>
+                    <input type="text" class="form-control" id="rent" name="rent" placeholder="请按输入租金">
+                    <span id="rentblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="depositdiv">
+                    <label>押金：</label>
+                    <input type="text" class="form-control" id="deposit" name="deposit" placeholder="请输入押金">
+                    <span id="depositblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="servicediv">
+                    <label>服务费 /年：</label>
+                    <input type="text" class="form-control" id="service" name="service" placeholder="请输入服务费">
+                    <span id="serviceblock" class="help-block"></span>
+                </div>
+                <button type="button" class="btn btn-primary" style="margin-left: 500px;margin-bottom: 50px" id="rentyes">签订合同</button>
+            </form>
+        </div>
+        <!-- footer -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+              <b>WHUT</b>&emsp;zy1402
+            </div>
+            <strong>Copyright &copy; 2018.02-2018.06 hxj_jessie@163.com.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+      $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- Morris.js charts -->
+    <script src="{{ url_for('static', filename='js/admin/raphael.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/morris.min.js') }}"></script>
+    <!-- Sparkline -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.sparkline.min.js') }}"></script>
+    <!-- jvectormap -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.knob.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ url_for('static', filename='js/admin/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/daterangepicker.js') }}"></script>
+    <!-- datepicker -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap-datepicker.min.js') }}"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap3-wysihtml5.all.min.js') }}"></script>
+    <!-- Slimscroll -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.slimscroll.min.js') }}"></script>
+    <!-- FastClick -->
+    <script src="{{ url_for('static', filename='js/admin/fastclick.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='js/admin/adminlte.min.js') }}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{ url_for('static', filename='js/admin/dashboard.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{{ url_for('static', filename='js/admin/demo.js') }}"></script>
+</body>
+</html>
+<script>
+    $('.date').datepicker({
+      autoclose: true
+    });
+    $('#houseid').blur(function(){
+        var houseid = $('#houseid').val();
+        if (houseid == ""){
+            $('#houseiddiv').attr("class", "form-group has-error");
+            $('#houseidblock').text("房源编号不可为空");
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="rent2") }}',
+                data: {
+                    type: 'checkhouseid',
+                    houseid: houseid
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    if(data == 'nodata'){
+                         $('#houseiddiv').attr("class", "form-group has-error");
+                         $('#houseidblock').text("房源不存在，请输入正确的编号");
+                    }else{
+                        $('#houseiddiv').attr("class", "form-group has-success");
+                        $('#houseidblock').text("");
+                    }
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+        }
+    });
+    $('#tel').blur(function () {
+        var tel = $('#tel').val();
+        if (tel == ""){
+            $('#teldiv').attr("class", "form-group has-error");
+            $('#telblock').text("租户电话不可为空");
+        }
+        else if(tel.length != 11 || !/^1\d+$/.test(tel)){
+            $('#teldiv').attr("class", "form-group has-error");
+            $('#telblock').text("请输入合法的电话号码");
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="rent2") }}',
+                data: {
+                    type: 'checktel',
+                    tel: tel
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    if(data == 'success'){
+                        $('#teldiv').attr("class", "form-group has-success");
+                        $('#telblock').text("");
+                    }
+                    else{
+                        $('#teldiv').attr("class", "form-group has-error");
+                        $('#telblock').text("该用户不存在，请重新输入");
+                    }
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+        }
+    });
+    $('#rent').blur(function () {
+        var rent = $('#rent').val();
+        if (rent == ""){
+            $('#rentdiv').attr("class", "form-group has-error");
+            $('#rentblock').text("租金不可为空");
+        }
+        else if(!/^\d+$/.test(rent)){
+            $('#rentdiv').attr("class", "form-group has-error");
+            $('#rentblock').text("请输入合法租金");
+        }
+        else{
+            $('#rentdiv').attr("class", "form-group has-success");
+            $('#rentblock').text("");
+        }
+    });
+    $('#deposit').blur(function () {
+        var deposit = $('#deposit').val();
+        if (deposit == ""){
+            $('#depositdiv').attr("class", "form-group has-error");
+            $('#depositblock').text("押金不可为空");
+        }
+        else if(!/^\d+$/.test(deposit)){
+            $('#depositdiv').attr("class", "form-group has-error");
+            $('#depositblock').text("请输入合法押金");
+        }
+        else{
+            $('#depositdiv').attr("class", "form-group has-success");
+            $('#depositblock').text("");
+        }
+    });
+    $('#service').blur(function () {
+        var service = $('#service').val();
+        if (service == ""){
+            $('#servicediv').attr("class", "form-group has-error");
+            $('#serviceblock').text("服务费不可为空");
+        }
+        else if(!/^\d+$/.test(service)){
+            $('#servicediv').attr("class", "form-group has-error");
+            $('#serviceblock').text("请输入合法服务费");
+        }
+        else{
+            $('#servicediv').attr("class", "form-group has-success");
+            $('#serviceblock').text("");
+        }
+    });
+    $('#rentyes').click(function () {
+        var houseid = $('#houseid').val();
+        var houseidflag = false;
+        if (houseid == ""){
+            $('#houseiddiv').attr("class", "form-group has-error");
+            $('#houseidblock').text("房源编号不可为空");
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="rent2") }}',
+                data: {
+                    type: 'checkhouseid',
+                    houseid: houseid
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    if(data == 'nodata'){
+                         $('#houseiddiv').attr("class", "form-group has-error");
+                         $('#houseidblock').text("房源不存在，请输入正确的编号");
+                    }else{
+                        $('#houseiddiv').attr("class", "form-group has-success");
+                        $('#houseidblock').text("");
+                    }
+                }
+            });
+            if($('#houseidblock').text()=="")
+            {
+                houseidflag = true;
+            }
+        }
+        var tel = $('#tel').val();
+        var telflag = false;
+        if (tel == ""){
+            $('#teldiv').attr("class", "form-group has-error");
+            $('#telblock').text("租户电话不可为空");
+        }
+        else if(tel.length != 11 || !/^1\d+$/.test(tel)){
+            $('#teldiv').attr("class", "form-group has-error");
+            $('#telblock').text("请输入合法的电话号码");
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="rent2") }}',
+                data: {
+                    type: 'checktel',
+                    tel: tel
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    if(data == 'success'){
+                        $('#teldiv').attr("class", "form-group has-success");
+                        $('#telblock').text("");
+                    }
+                    else{
+                        $('#teldiv').attr("class", "form-group has-error");
+                        $('#telblock').text("该用户不存在，请重新输入");
+                    }
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+            if($('#telblock').text()=="")
+            {
+                telflag = true;
+            }
+        }
+        var checkintime = $('#checkin').val();
+        var checkin;
+        var checkinflag = false;
+        if(checkintime==""){
+            $('#checkindiv').attr("class", "form-group has-error");
+            $('#checkinblock').text("请选择入住时间");
+        }
+        else{
+            $('#checkindiv').attr("class", "form-group has-success");
+            $('#checkinblock').text("");
+            checkintime = $('#checkin').val().split('/');
+            checkin = checkintime[2] + '-' + checkintime[0] + '-' + checkintime[1];
+            checkinflag = true;
+        }
+        var checkouttime = $('#checkout').val();
+        var checkout;
+        var checkoutflag = false;
+        if(checkouttime==""){
+            $('#checkoutdiv').attr("class", "form-group has-error");
+            $('#checkoutblock').text("请选择退房时间");
+        }
+        else{
+            $('#checkoutdiv').attr("class", "form-group has-success");
+            $('#checkoutblock').text("");
+            checkouttime = $('#checkout').val().split('/');
+            checkout = checkouttime[2] + '-' + checkouttime[0] + '-' + checkouttime[1];
+            checkoutflag = true;
+        }
+        var payment = $("#payment option:selected").val();
+        var paymentflag = false;
+        if (payment == "付款方式"){
+            $('#paymentdiv').attr("class", "form-group has-error");
+            $('#paymentblock').text("请选择付款方式");
+        }
+        else{
+            $('#paymentdiv').attr("class", "form-group has-success");
+            $('#paymentblock').text("");
+            paymentflag = true;
+        }
+        var rent = $('#rent').val();
+        var rentflag = false;
+        if (rent == ""){
+            $('#rentdiv').attr("class", "form-group has-error");
+            $('#rentblock').text("租金不可为空");
+        }
+        else if(!/^\d+$/.test(rent)){
+            $('#rentdiv').attr("class", "form-group has-error");
+            $('#rentblock').text("请输入合法租金");
+        }
+        else{
+            $('#rentdiv').attr("class", "form-group has-success");
+            $('#rentblock').text("");
+            rentflag = true;
+        }
+        var deposit = $('#deposit').val();
+        var depositflag = false;
+        if (deposit == ""){
+            $('#depositdiv').attr("class", "form-group has-error");
+            $('#depositblock').text("押金不可为空");
+        }
+        else if(!/^\d+$/.test(deposit)){
+            $('#depositdiv').attr("class", "form-group has-error");
+            $('#depositblock').text("请输入合法押金");
+        }
+        else{
+            $('#depositdiv').attr("class", "form-group has-success");
+            $('#depositblock').text("");
+            depositflag = true;
+        }
+        var service = $('#service').val();
+        var serviceflag = false;
+        if (service == ""){
+            $('#servicediv').attr("class", "form-group has-error");
+            $('#serviceblock').text("服务费不可为空");
+        }
+        else if(!/^\d+$/.test(service)){
+            $('#servicediv').attr("class", "form-group has-error");
+            $('#serviceblock').text("请输入合法服务费");
+        }
+        else{
+            $('#servicediv').attr("class", "form-group has-success");
+            $('#serviceblock').text("");
+            serviceflag = true;
+        }
+        if(houseidflag==true && telflag==true && checkinflag==true && checkoutflag==true && paymentflag==true && rentflag==true && depositflag==true && serviceflag==true){
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="rent2") }}',
+                data: {
+                    type: 'rent',
+                    houseid: houseid,
+                    tenanttel: tel,
+                    checkin: checkin,
+                    checkout: checkout,
+                    payment: payment,
+                    rent: rent,
+                    deposit: deposit,
+                    service: service
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    if(data == 'success'){
+                        alert('您已成功签订合同');
+                        $('#houseiddiv').attr("class", "form-group");
+                        $('#houseidblock').text("");
+                        $('#houseid').val("");
+                        $('#teldiv').attr("class", "form-group");
+                        $('#telblock').text("");
+                        $('#tel').val("");
+                        $('#checkindiv').attr("class", "form-group");
+                        $('#checkinblock').text("");
+                        $('#checkin').val("");
+                        $('#checkoutdiv').attr("class", "form-group");
+                        $('#checkoutblock').text("");
+                        $('#checkout').val("");
+                        $('#paymentdiv').attr("class", "form-group");
+                        $('#paymentblock').text("");
+                        $('#payment').val("");
+                        $('#rentdiv').attr("class", "form-group");
+                        $('#rentblock').text("");
+                        $('#rent').val("");
+                        $('#depositdiv').attr("class", "form-group");
+                        $('#depositblock').text("");
+                        $('#deposit').val("");
+                        $('#servicediv').attr("class", "form-group");
+                        $('#serviceblock').text("");
+                        $('#service').val("");
+                    }
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+        }
+        else{
+            return;
+        }
+    });
+</script>

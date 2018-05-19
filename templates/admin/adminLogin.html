@@ -1,0 +1,86 @@
+{# @Time    : 2018/5/16 15:53 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <title>管理员登录 - JRoom</title>
+</head>
+<body>
+    <div class="col-md-3 login-right">
+        <img src="{{ url_for('static', filename="imgs/logo_pic_big.png") }}">
+        <p style="color:#DF4782"><i class="far fa-lightbulb"></i>&nbsp;&nbsp;请以管理员账号登录&nbsp;&nbsp;</p>
+        <form action="" method="post">
+            <div class="form-group" id="teldiv">
+                <label for="usertel">账&nbsp;&nbsp;号</label>
+                <input type="text" class="form-control" id="usertel" placeholder="请输入管理员账号">
+                <span id="telblock" class="help-block"></span>
+            </div>
+            <div class="form-group" id="pswdiv">
+                <label for="userpsw">密&nbsp;&nbsp;码</label>
+                <input type="password" class="form-control" id="userpsw" placeholder="请输入密码">
+                <span id="pswblock" class="help-block"></span>
+            </div>
+            <div>
+                <a class="forgot" href="#">忘记密码?</a>
+            </div>
+            <button type="button" class="btn btn-primary" id="login" style="margin-left:290px;">登&emsp;录</button>
+        </form>
+    </div>
+
+    <script>
+        $('#login').click(function () {
+            var usertel = $('#usertel').val();
+            var userpsw = $('#userpsw').val();
+            if(usertel==""){
+                $('#teldiv').attr("class", "form-group has-error");
+                $('#telblock').text("账号不可为空");
+                return;
+            }
+            else{
+                $('#teldiv').attr("class", "form-group");
+                $('#telblock').text("");
+            }
+            if(userpsw == ""){
+                $('#pswdiv').attr("class", "form-group has-error");
+                $('#pswblock').text("密码不可为空");
+                return;
+            }
+            else{
+                $('#pswdiv').attr("class", "form-group");
+                $('#pswblock').text("");
+            }
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu='login') }}',
+                data: {
+                    usertel: usertel,
+                    userpsw: userpsw
+                },
+                success: function (data) {
+                    if (data == true) {
+                        window.location.href = "{{ url_for('admin', menu='admin') }}";
+                    }
+                    else {
+                        $('#teldiv').attr("class", "form-group has-error");
+                        $('#pswdiv').attr("class", "form-group has-error");
+                        $('#telblock').text("用户名或密码错误");
+                        $('#pswblock').text("用户名或密码错误");
+                        $('#usertel').val("");
+                        $('#userpsw').val("");
+                        console.log('error');
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

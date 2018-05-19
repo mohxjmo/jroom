@@ -441,7 +441,7 @@ def user(menu):
             if status == 'end':
                 pagination = Userrecord.query.filter(Userrecord.usertel == session['usertel'],
                                                      Userrecord.uretype == '预约看房',
-                                                     Userrecord.urestatus == '已完成').order_by('-timeend').paginate(
+                                                     Userrecord.urestatus == '已完成约看').order_by('-timeend').paginate(
                     page=page, per_page=5, max_per_page=5, error_out=False)
                 if pagination.total == 0:
                     return render_template('userviewsEND.html', flag="no")
@@ -553,18 +553,176 @@ def posthouse():
     else:
         posthouse = Post(district=request.form.get('district'), street=request.form.get('street'),
                          community=request.form.get('community'),
-                         price=int(request.form.get('price')), tel=request.form.get('tel'))
+                         price=int(request.form.get('price')), tel=request.form.get('tel'),status='已委托')
         db.session.add(posthouse)
         db.session.commit()
         return jsonify('success')
 
 
-@app.route('/admin',methods=['GET','POST'])
-def admin():
+@app.route('/admin/<menu>',methods=['GET','POST'])
+def admin(menu):
     if request.method == 'GET':
-        return render_template('admin/admin.html')
+        if menu == 'login':
+            return render_template('admin/adminLogin.html')
+        if menu == 'admin':
+            return render_template('admin/admin.html')
+        if menu == 'post1':
+            page = int(request.args.get('page'))
+            pagination = Post.query.order_by('-ID').paginate(
+                page=page, per_page=10, max_per_page=10, error_out=False)
+            if pagination.total == 0:
+                return render_template('admin/adminPost1.html', flag="no")
+            else:
+                posts = []
+                for item in pagination.items:
+                    # status: 已委托 待审核 已发布
+                    if item.status == u'已发布':
+                        pass
+                    else:
+                        posts.append(item)
+                return render_template('admin/adminPost1.html', flag="yes", pagination=pagination, posts=posts)
+        if menu == 'post2':
+            return render_template('admin/adminPost2.html')
+        if menu == 'view':
+            # status： 已约看 已取消约看 已完成约看
+            page = int(request.args.get('page'))
+            pagination = Userrecord.query.filter(Userrecord.uretype == '预约看房', Userrecord.urestatus != '已取消约看').order_by('-timeapply').paginate(page=page, per_page=10, max_per_page=10, error_out=False)
+            if pagination.total == 0:
+                return render_template('admin/adminView.html', flag="no")
+            else:
+                views = []
+                for item in pagination.items:
+                    views.append(item)
+                return render_template('admin/adminView.html', flag="yes", pagination=pagination, views=views)
+        if menu == 'rent1':
+            page = int(request.args.get('page'))
+            pagination = Rentrecord.query.order_by('-retime').paginate(page=page, per_page=10, max_per_page=10, error_out=False)
+            if pagination.total == 0:
+                return render_template('admin/adminRent1.html', flag="no")
+            else:
+                rents = []
+                for item in pagination.items:
+                    rents.append(item)
+                return render_template('admin/adminRent1.html',rents=rents,flag="yes", pagination=pagination)
+        if menu == 'rent2':
+            return render_template('admin/adminRent2.html')
+        if menu == 'info':
+            return render_template('admin/adminInfo.html')
     else:
-        pass
+        if menu == 'login':
+            mantel = request.form.get('usertel')
+            manpsw = request.form.get('userpsw')
+            manager = Manager.query.filter(Manager.mantel == mantel, Manager.manpsw == manpsw).first()
+            if manager:
+                session['mantel'] = mantel
+                session['manpsw'] = manpsw
+                session['manname'] = manager.manname
+                # 31天内不重复登录
+                session.permanent = True
+                return jsonify(True)
+            return jsonify(False)
+        if menu == 'post1':
+            type = request.form.get('type')
+            if type=='check':
+                pid = request.form.get('pid')
+                post = Post.query.filter(Post.ID == pid).first()
+                post.status = '待审核'
+                db.session.commit()
+                return 'success'
+            if type=='post':
+                pass
+            if type=='delete':
+                pid = request.form.get('pid')
+                post = Post.query.filter(Post.ID == pid).first()
+                db.session.delete(post)
+                db.session.commit()
+                return 'success'
+            return render_template('admin/adminPost1.html')
+        if menu == 'post2':
+            type = request.form.get('type')
+            if type=='checkpid':
+                pid = request.form.get('pid')
+                post = Post.query.filter(Post.ID == pid, Post.status=='待审核').first()
+                data = {}
+                if post:
+                    data['district'] = post.district
+                    data['street'] = post.street
+                    data['community'] = post.community
+                    return jsonify(data)
+                else:
+                    return jsonify('nodata')
+        if menu == 'view':
+            type = request.form.get('type')
+            if type == 'timedeal':
+                record = Userrecord.query.filter(Userrecord.ureID == request.form.get('id')).first()
+                record.timedeal = request.form.get('timedeal')
+                db.session.commit()
+                return jsonify('success')
+            if type == 'timeend':
+                record = Userrecord.query.filter(Userrecord.ureID == request.form.get('id')).first()
+                record.timeend = request.form.get('timeend')
+                record.urestatus = '已完成约看'
+                db.session.commit()
+                return jsonify('success')
+        if menu == 'rent1':
+            # 解除租约
+            house = House.query.filter(House.houseID == request.form.get('hid')).first()
+            house.housestatus = 1
+            db.session.commit()
+            record = Rentrecord.query.filter(Rentrecord.reID == int(request.form.get('reid'))).first()
+            record.checkout = date.today()
+            record.status = '已结束'
+            db.session.commit()
+            return jsonify('success')
+        if menu == 'rent2':
+            type = request.form.get('type')
+            if type == 'checkhouseid':
+                houseid = request.form.get('houseid')
+                house = House.query.filter(House.houseID == houseid, House.housestatus == 1).first()
+                if house:
+                    return jsonify('ok')
+                else:
+                    return jsonify('nodata')
+            if type == "checktel":
+                tel = request.form.get('tel')
+                user = User.query.filter(User.usertel == tel).first()
+                if user:
+                    return jsonify('success')
+                else:
+                    return jsonify('nodata')
+            if type == "rent":
+                house = House.query.filter(House.houseID == request.form.get('houseid')).first()
+                house.housestatus = 0
+                house.tenanttel = request.form.get('tenanttel')
+                db.session.commit()
+                payment = request.form.get('payment').replace(u'付',"")
+                record = Rentrecord (retime = date.today(),repayment = payment,rerent = int(request.form.get('rent')),
+                                     redeposit = int(request.form.get('deposit')),reservice = int(request.form.get('service')),
+                                     checkin = request.form.get('checkin'),checkout = request.form.get('checkout'),
+                                     usertel = request.form.get('tenanttel'),houseID = request.form.get('houseid'), status='进行中')
+                db.session.add(record)
+                db.session.commit()
+                return jsonify('success')
+        if menu == 'info':
+            type = request.form.get('type')
+            if type == 'save':
+                name = request.form.get('name')
+                manager = Manager.query.filter(Manager.mantel == session['mantel']).first()
+                manager.manname = name
+                session['manname'] = name
+                db.session.commit()
+                return jsonify(name)
+            if type == 'psw':
+                manager = Manager.query.filter(Manager.mantel == session['mantel']).first()
+                manager.manpsw = request.form.get('psw')
+                session['manpsw'] = request.form.get('psw')
+                db.session.commit()
+                return jsonify('success')
+            if type == 'cancel':
+                manager = Manager.query.filter(Manager.mantel == session['mantel']).first()
+                session['manname'] = manager.manname
+                return jsonify(manager.manname)
+            return render_template('admin/adminInfo.html')
 
 if __name__ == '__main__':
     app.run()

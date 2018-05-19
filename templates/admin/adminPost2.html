@@ -1,0 +1,473 @@
+{# @Time    : 2018/5/16 15:54 #}
+{# @Author  : huxiajie  #}
+{# @Time    : 2018/5/16 15:55 #}
+{# @Author  : huxiajie  #}
+{# @Time    : 2018/5/14 20:55 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>后台管理 - JRoom</title>
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/ionicons.min.css") }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/AdminLTE.css") }}">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/_all-skins.min.css") }}">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/morris.css") }}">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/jquery-jvectormap.css") }}">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap-datepicker.min.css") }}">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/daterangepicker.css") }}">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap3-wysihtml5.min.css") }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/user.css") }}" />
+</head>
+<body>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- logo -->
+            <a href="{{ url_for('admin', menu='admin') }}" class="logo">
+                <span class="logo-lg"><b>JRoom</b></span>
+            </a>
+            <nav class="navbar navbar-static-top">
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#"><span class="hidden-xs">管理员界面</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header"></li>
+                    <li class="active treeview menu-open">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>发布房源</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='post1',page=1) }}">&emsp;&emsp;委托记录</a></li>
+                            <li><a href="{{ url_for('admin', menu='post2') }}" style="color: #DF4782;">&emsp;&emsp;发布房源</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='view',page=1) }}"><i class="far fa-eye"></i><span>房源约看</span></a>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>房源合同</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li class="active"><a href="{{ url_for('admin', menu='rent1',page=1) }}">&emsp;&emsp;合同纪录</a></li>
+                            <li><a href="{{ url_for('admin', menu='rent2') }}">&emsp;&emsp;合同签订</a></li>
+                        </ul>
+                    </li>
+                    <li >
+                        <a href="{{ url_for('admin', menu='info') }}"><i class="far fa-user"></i><span>个人资料</span></a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <form class="form-horizontal" action="" method="post" id="posthouse" style="width: 600px;margin-bottom: 0">
+                <br><br>
+                <div class="form-group" id="postiddiv">
+                    <label>房源委托编号：</label>
+                    <input type="text" class="form-control" id="postid" name="postid" placeholder="请输入房源委托编号">
+                    <span id="postidblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="districtdiv">
+                    <label>北京市-行政区：</label>
+                    <input type="text" class="form-control" id="district" name="district" placeholder="请输入房屋所在行政区">
+                    <span id="districtblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="areadiv">
+                    <label>区域：</label>
+                    <input type="text" class="form-control" id="area" name="area" placeholder="请输入房屋所在区域">
+                    <span id="areablock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="streetdiv">
+                    <label>街道：</label>
+                    <input type="text" class="form-control" id="street" name="street" placeholder="请输入房屋所在街道">
+                    <span id="streetblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="communitydiv">
+                    <label>小区：</label>
+                    <input type="text" class="form-control" id="community" name="community" placeholder="请输入房屋所在小区">
+                    <span id="communityblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="roomdiv">
+                    <label>房间号：（格式为：0+数字，举例：01）</label>
+                    <input type="text" class="form-control" id="room" name="room" placeholder="请按格式输入房间号">
+                    <span id="roomblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="hareadiv">
+                    <label>房间面积：</label>
+                    <input type="text" class="form-control" id="harea" name="harea" placeholder="请输入房间面积">
+                    <span id="hareablock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="hdirectdiv">
+                    <label>房间朝向：</label>
+                    <input type="text" class="form-control" id="hdirect" name="hdirect" placeholder="请输入房间朝向">
+                    <span id="hdirectblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="hfloordiv">
+                    <label>房间楼层：（格式：所在楼层/总楼层，举例：6/12）</label>
+                    <input type="text" class="form-control" id="hfloor" name="hfloor" placeholder="请按格式输入房间楼层">
+                    <span id="hfloorblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="hhalldiv">
+                    <label>房屋户型：（格式：x室x厅，举例：3室1厅）</label>
+                    <input type="text" class="form-control" id="hhall" name="hhall" placeholder="请输入房屋户型">
+                    <span id="hhallblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="arounddiv">
+                    <label>房屋周边：</label>
+                    <textarea class="form-control" rows="3" id="around" name="around" placeholder="请输入房屋周边信息"></textarea>
+                    <span id="aroundblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="htypediv">
+                    <label>出租方式：</label>
+                    <select id="htype">
+                        <option disabled selected>出租方式</option>
+                        <option value ="合租">合租</option>
+                        <option value ="整租">整租</option>
+                    </select>
+                    <span id="htypeblock" class="help-block"></span>
+                </div>
+                <div class="form-group" id="pricediv">
+                    <label>选择图片:</label>
+                    <button type="button" class="btn btn-default">选择图片</button>
+                    <span id="priceblock" class="help-block"></span>
+                </div>
+            </form>
+            <form class="form-inline" style="margin: 0 0 20px 500px;line-height: 20px">
+                <p><b>付款方式：</b></p>
+                <div class="form-group" id="pay11div">
+                    <label>租金 /天：</label>
+                    <input type="text" class="form-control" id="pay11" placeholder="请输入租金 /天" style="width:100px">
+                </div>
+                <div class="form-group" id="pay12div">
+                    <label>押金：</label>
+                    <input type="text" class="form-control" id="pay12" placeholder="请输入押金">
+                </div>
+                <div class="form-group" id="pay13div">
+                    <label>服务费 /年：</label>
+                    <input type="text" class="form-control" id="pay13" placeholder="请输入服务费 /年">
+                </div><br>
+                <div class="form-group" id="pay21div">
+                    <label>租金 /月：</label>
+                    <input type="text" class="form-control" id="pay21" placeholder="请输入租金 /月" style="width:100px">
+                </div>
+                <div class="form-group" id="pay22div">
+                    <label>押金：</label>
+                    <input type="text" class="form-control" id="pay22" placeholder="请输入押金">
+                </div>
+                <div class="form-group" id="pay23div">
+                    <label>服务费 /年：</label>
+                    <input type="text" class="form-control" id="pay23" placeholder="请输入服务费 /年">
+                </div><br>
+                <div class="form-group" id="pay31div">
+                    <label>租金 /季：</label>
+                    <input type="text" class="form-control" id="pay31" placeholder="请输入租金 /季" style="width:100px">
+                </div>
+                <div class="form-group" id="pay32div">
+                    <label>押金：</label>
+                    <input type="text" class="form-control" id="pay32" placeholder="请输入押金">
+                </div>
+                <div class="form-group" id="pay33div">
+                    <label>服务费 /年：</label>
+                    <input type="text" class="form-control" id="pay33" placeholder="请输入服务费 /年">
+                </div><br>
+                <div class="form-group" id="pay41div">
+                    <label>租金 /半年：</label>
+                    <input type="text" class="form-control" id="pay41" placeholder="请输入租金 /半年" style="width:100px">
+                </div>
+                <div class="form-group" id="pay42div">
+                    <label>押金：</label>
+                    <input type="text" class="form-control" id="pay42" placeholder="请输入押金">
+                </div>
+                <div class="form-group" id="pay43div">
+                    <label>服务费 /年：</label>
+                    <input type="text" class="form-control" id="pay43" placeholder="请输入服务费 /年">
+                </div><br>
+                <div class="form-group" id="pay51div">
+                    <label>租金 /年：</label>
+                    <input type="text" class="form-control" id="pay51" placeholder="请输入租金 /年" style="width:100px">
+                </div>
+                <div class="form-group" id="pay52div">
+                    <label>押金：</label>
+                    <input type="text" class="form-control" id="pay52" placeholder="请输入押金">
+                </div>
+                <div class="form-group" id="pay53div">
+                    <label>服务费 /年：</label>
+                    <input type="text" class="form-control" id="pay53" placeholder="请输入服务费 /年">
+                </div>
+            </form>
+            <button type="button" class="btn btn-primary" style="margin-left: 800px;margin-bottom: 50px" id="postyes">发布房源</button>
+        </div>
+
+        <br><br>
+        <!-- footer -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+              <b>WHUT</b>&emsp;zy1402
+            </div>
+            <strong>Copyright &copy; 2018.02-2018.06 hxj_jessie@163.com.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+      $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- Morris.js charts -->
+    <script src="{{ url_for('static', filename='js/admin/raphael.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/morris.min.js') }}"></script>
+    <!-- Sparkline -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.sparkline.min.js') }}"></script>
+    <!-- jvectormap -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.knob.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ url_for('static', filename='js/admin/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/daterangepicker.js') }}"></script>
+    <!-- datepicker -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap-datepicker.min.js') }}"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap3-wysihtml5.all.min.js') }}"></script>
+    <!-- Slimscroll -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.slimscroll.min.js') }}"></script>
+    <!-- FastClick -->
+    <script src="{{ url_for('static', filename='js/admin/fastclick.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='js/admin/adminlte.min.js') }}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{ url_for('static', filename='js/admin/dashboard.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{{ url_for('static', filename='js/admin/demo.js') }}"></script>
+</body>
+</html>
+<script>
+    $('#postid').blur(function(){
+        var pid = $('#postid').val();
+        if (pid == ""){
+            $('#postiddiv').attr("class", "form-group has-error");
+            $('#postidblock').text("房源编号不可为空");
+        }
+        else if(!/^\d+$/.test(pid)){
+            $('#postiddiv').attr("class", "form-group has-error");
+            $('#postidblock').text("房源编号必须为数字");
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="post2") }}',
+                data: {
+                    type: 'checkpid',
+                    pid: pid
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    if(data == 'nodata'){
+                         $('#postiddiv').attr("class", "form-group has-error");
+                         $('#postidblock').text("委托房源不存在，请输入正确的编号");
+                    }else{
+                        $('#postiddiv').attr("class", "form-group has-success");
+                        $('#postidblock').text("");
+                        $('#district').val(data["district"]);
+                        $('#street').val(data["street"]);
+                        $('#community').val(data["community"]);
+                    }
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+        }
+    });
+    $('#district').blur(function () {
+        var district = $('#district').val();
+        var dists = ["东城区", "西城区", "朝阳区", "丰台区", "石景山区", "海淀区", "门头沟区", "房山区", "通州区", "顺义区", "昌平区", "大兴区", "亦庄开发区"];
+        if (district == ""){
+            $('#districtdiv').attr("class", "form-group has-error");
+            $('#districtblock').text("行政区不可为空");
+        }
+        else if( jQuery.inArray( district, dists ) == -1){
+            $('#districtdiv').attr("class", "form-group has-error");
+            $('#districtblock').text("请输入北京市的行政区");
+        }
+        else{
+            $('#districtdiv').attr("class", "form-group has-success");
+            $('#districtblock').text("");
+        }
+    });
+    $('#area').blur(function () {
+        var area = $('#area').val();
+        if (area == ""){
+            $('#areadiv').attr("class", "form-group has-error");
+            $('#areablock').text("所属区域不可为空");
+        }
+        else{
+            $('#areadiv').attr("class", "form-group has-success");
+            $('#areablock').text("");
+        }
+    });
+    $('#street').blur(function () {
+        var street = $('#street').val();
+        if (street == ""){
+            $('#streetdiv').attr("class", "form-group has-error");
+            $('#streetblock').text("所属街道不可为空");
+        }
+        else{
+            $('#streetdiv').attr("class", "form-group has-success");
+            $('#streetblock').text("");
+        }
+    });
+    $('#community').blur(function () {
+        var community = $('#community').val();
+        if (community == ""){
+            $('#communitydiv').attr("class", "form-group has-error");
+            $('#communityblock').text("所属小区不可为空");
+        }
+        else{
+            $('#communitydiv').attr("class", "form-group has-success");
+            $('#communityblock').text("");
+        }
+    });
+    $('#room').blur(function () {
+        var room = $('#room').val();
+        if (room == ""){
+            $('#roomdiv').attr("class", "form-group has-error");
+            $('#roomblock').text("房间号不可为空");
+        }
+        else if(!/^0\d$/.test(room)){
+            $('#roomdiv').attr("class", "form-group has-error");
+            $('#roomblock').text("请按格式输入房间号");
+        }
+        else{
+            $('#roomdiv').attr("class", "form-group has-success");
+            $('#roomblock').text("");
+        }
+    });
+    $('#harea').blur(function () {
+        var harea = $('#harea').val();
+        if (harea == ""){
+            $('#hareadiv').attr("class", "form-group has-error");
+            $('#hareablock').text("房间面积不可为空");
+        }
+        else if(!/^[0-9]+([.]{1}[0-9]+){0,1}$/.test(harea)){
+            $('#hareadiv').attr("class", "form-group has-error");
+            $('#hareablock').text("请输入数字");
+        }
+        else{
+            $('#hareadiv').attr("class", "form-group has-success");
+            $('#hareablock').text("");
+        }
+    });
+    $('#hdirect').blur(function () {
+        var hdirect = $('#hdirect').val();
+        if (hdirect == ""){
+            $('#hdirectdiv').attr("class", "form-group has-error");
+            $('#hdirectblock').text("房间朝向不可为空");
+        }
+        else{
+            $('#hdirectdiv').attr("class", "form-group has-success");
+            $('#hdirectblock').text("");
+        }
+    });
+    $('#hfloor').blur(function () {
+        var hfloor = $('#hfloor').val();
+        if (hfloor == ""){
+            $('#hfloordiv').attr("class", "form-group has-error");
+            $('#hfloorblock').text("所在楼层不可为空");
+        }
+        else if(!/^\d+\/\d/.test(hfloor)){
+            $('#hfloordiv').attr("class", "form-group has-error");
+            $('#hfloorblock').text("请按格式输入楼层");
+        }
+        else{
+            $('#hfloordiv').attr("class", "form-group has-success");
+            $('#hfloorblock').text("");
+        }
+    });
+    $('#hhall').blur(function () {
+        var hhall = $('#hhall').val();
+        if (hhall == ""){
+            $('#hhalldiv').attr("class", "form-group has-error");
+            $('#hhallblock').text("房屋户型不可为空");
+        }
+        else if(!/^\d室\d厅/.test(hhall)){
+            $('#hhalldiv').attr("class", "form-group has-error");
+            $('#hhallblock').text("请按格式输入房屋户型");
+        }
+        else{
+            $('#hhalldiv').attr("class", "form-group has-success");
+            $('#hhallblock').text("");
+        }
+    });
+    $('#around').blur(function () {
+        var around = $('#around').val();
+        if (around == ""){
+            $('#arounddiv').attr("class", "form-group has-error");
+            $('#aroundblock').text("房屋周边信息不可为空");
+        }
+        else{
+            $('#arounddiv').attr("class", "form-group has-success");
+            $('#aroundblock').text("");
+        }
+    });
+    $('#htype').change(function () {
+        var htype = $("#htype option:selected").val();
+        if (htype == ""){
+            $('#hhalldiv').attr("class", "form-group has-error");
+            $('#hhallblock').text("请选择出租方式");
+        }
+        else if(htype == "合租"){
+            var item = '<div class="form-group" id="bbdiv">\n' +
+                       '    <input type="checkbox" id="balcony"> 是否有独立阳台<br>\n' +
+                       '    <input type="checkbox" id="bathroom"> 是否有独立卫生间\n' +
+                       '</div>';
+            $('#htypediv').after(item);
+        }
+        else{
+            $('#bbdiv').remove();
+        }
+    });
+    $('#postyes').click(function () {
+        //检验表单
+        //ajax
+    });
+</script>

@@ -1,0 +1,329 @@
+{# @Time    : 2018/5/16 15:55 #}
+{# @Author  : huxiajie  #}
+{# @Time    : 2018/5/14 20:55 #}
+{# @Author  : huxiajie  #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>后台管理 - JRoom</title>
+    <link rel="icon" href="{{ url_for('static',filename="imgs/icon.jpg") }}">
+    <!-- bootstrap -->
+    <link rel='stylesheet' href="{{ url_for('static', filename="css/bootstrap.min.css") }}"/>
+    <!-- Font Awsome -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/fontawesome-all.css") }}">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/ionicons.min.css") }}">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/AdminLTE.css") }}">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/_all-skins.min.css") }}">
+    <!-- Morris chart -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/morris.css") }}">
+    <!-- jvectormap -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/jquery-jvectormap.css") }}">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap-datepicker.min.css") }}">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/daterangepicker.css") }}">
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/admin/bootstrap3-wysihtml5.min.css") }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename="css/user.css") }}" />
+</head>
+<body>
+    <div class="wrapper">
+        <header class="main-header">
+            <!-- logo -->
+            <a href="{{ url_for('admin', menu='admin') }}" class="logo">
+                <span class="logo-lg"><b>JRoom</b></span>
+            </a>
+            <nav class="navbar navbar-static-top">
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown user user-menu">
+                            <a href="#"><span class="hidden-xs">管理员界面</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+        <!-- Left side column. contains the logo and sidebar -->
+        <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+                <!-- sidebar menu: : style can be found in sidebar.less -->
+                <ul class="sidebar-menu" data-widget="tree">
+                    <li class="header"></li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>发布房源</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='post1',page=1) }}">&emsp;&emsp;委托记录</a></li>
+                            <li><a href="{{ url_for('admin', menu='post2') }}">&emsp;&emsp;发布房源</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='view',page=1) }}"><i class="far fa-eye"></i><span>房源约看</span></a>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-edit"></i><span>房源合同</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="{{ url_for('admin', menu='rent1',page=1) }}">&emsp;&emsp;合同纪录</a></li>
+                            <li><a href="{{ url_for('admin', menu='rent2') }}">&emsp;&emsp;合同签订</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{{ url_for('admin', menu='info') }}" style="color: #DF4782;"><i class="far fa-user"></i><span>个人资料</span></a>
+                    </li>
+                </ul>
+            </section>
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <div class="title">我的信息</div>
+            <form class="form-horizontal infoform">
+                <div class="form-group" id="namediv">
+                    <label class="col-sm-2 control-label">名称</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="name" placeholder="{{ session.get('manname') }}" value="{{ session.get('manname') }}">
+                        <span id="nameblock" class="help-block"></span>
+                    </div>
+                    <input type="button" class="btn btn-danger" id="save" value="保存修改">
+                    <input type="button" class="btn btn-default" id="cancel" style="margin-left: 15px" value="取消修改">
+                </div>
+                <div class="form-group" id="teldiv">
+                    <label class="col-sm-2 control-label">联系方式</label>
+                    <div class="col-sm-3">
+                        <p class="form-control-static">{{ session.get('mantel') }}</p>
+                    </div>
+                </div>
+                <div class="form-group" id="pswdiv">
+                    <label class="col-sm-2 control-label">密码</label>
+                    <div class="col-sm-3">
+                        <a id="pswchange">修改密码?</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- footer -->
+        <footer class="main-footer">
+            <div class="pull-right hidden-xs">
+              <b>WHUT</b>&emsp;zy1402
+            </div>
+            <strong>Copyright &copy; 2018.02-2018.06 hxj_jessie@163.com.</strong> All rights
+            reserved.
+        </footer>
+    </div>
+    <!-- jQuery 3 -->
+    <script src="{{ url_for('static', filename='js/jquery-3.3.1.min.js') }}"></script>
+    <!-- jQuery UI 1.11.4 -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-ui.min.js') }}"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+      $.widget.bridge('uibutton', $.ui.button);
+    </script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="{{ url_for('static', filename="js/bootstrap.min.js") }}"></script>
+    <!-- Morris.js charts -->
+    <script src="{{ url_for('static', filename='js/admin/raphael.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/morris.min.js') }}"></script>
+    <!-- Sparkline -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.sparkline.min.js') }}"></script>
+    <!-- jvectormap -->
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-1.2.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.knob.min.js') }}"></script>
+    <!-- daterangepicker -->
+    <script src="{{ url_for('static', filename='js/admin/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/admin/daterangepicker.js') }}"></script>
+    <!-- datepicker -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap-datepicker.min.js') }}"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="{{ url_for('static', filename='js/admin/bootstrap3-wysihtml5.all.min.js') }}"></script>
+    <!-- Slimscroll -->
+    <script src="{{ url_for('static', filename='js/admin/jquery.slimscroll.min.js') }}"></script>
+    <!-- FastClick -->
+    <script src="{{ url_for('static', filename='js/admin/fastclick.js') }}"></script>
+    <!-- AdminLTE App -->
+    <script src="{{ url_for('static', filename='js/admin/adminlte.min.js') }}"></script>
+    <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+    <script src="{{ url_for('static', filename='js/admin/dashboard.js') }}"></script>
+    <!-- AdminLTE for demo purposes -->
+    <script src="{{ url_for('static', filename='js/admin/demo.js') }}"></script>
+</body>
+</html>
+<script>
+    $('#save').click(function () {
+        var name = $('#name').val();
+        var nameflag = false;
+        if(name==""){
+            $('#namediv').attr("class", "form-group has-error");
+            $('#nameblock').text("昵称不可为空");
+
+        }
+        else if(name.length > 10){
+            $('#namediv').attr("class", "form-group has-error");
+            $('#nameblock').text("昵称长度必须小于10个字符");
+        }
+        else{
+            $('#namediv').attr("class", "form-group has-success");
+            $('#nameblock').text("");
+            nameflag = true;
+        }
+        if(nameflag==true){
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="info") }}',
+                data: {
+                    type: 'save',
+                    name: name
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    $('#namediv').attr("class", "form-group");
+                    $('#name').val(data);
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+        }
+    });
+    $('#cancel').click(function () {
+        $.ajax({
+            type: 'POST',
+            url: '{{ url_for('admin', menu="info") }}',
+            data: {
+                type: "cancel"
+            },
+            dataType: 'json',  //指希望服务端返回json格式的数据
+            success: function (data) { //data是json格式的数据
+                $('#namediv').attr("class", "form-group");
+                $('#nameblock').text("");
+                $('#name').val(data);
+            },
+            error: function (xhr, type) {
+                console.log("error");
+            }
+        });
+    });
+    $('#pswchange').click(function () {
+        var item = '<div class="form-group" id="pswolddiv">\n' +
+                   '    <label class="col-sm-2 control-label"></label>\n' +
+                   '    <div class="col-sm-3">\n' +
+                   '        <input type="password" class="form-control" id="pswold" placeholder="请输入原始密码" onblur="blurpswold()">\n' +
+                   '        <span id="pswoldblock" class="help-block"></span>\n' +
+                   '    </div>\n' +
+                   '</div>\n' +
+                   '<div class="form-group" id="pswnewdiv">\n' +
+                   '    <label class="col-sm-2 control-label"></label>\n' +
+                   '    <div class="col-sm-3">\n' +
+                   '        <input type="password" class="form-control" id="pswnew" placeholder="请输入新密码" onblur="blurpswnew()">\n' +
+                   '        <span id="pswnewblock" class="help-block"></span>\n' +
+                   '    </div>\n' +
+                   '</div>\n' +
+                   '<div class="form-group" id="pswbtn">\n' +
+                   '    <div class="col-sm-3" style="margin-left: 520px">\n' +
+                   '        <input type="button" class="btn btn-danger" id="pswyes" value="确认修改" onclick="clickpswyes()">\n' +
+                   '        <input type="button" class="btn btn-default" id="pswno" style="margin-left: 15px" value="取消修改" onclick="clickpswno()">\n' +
+                   '    </div>\n' +
+                   '</div>';
+        $('#pswdiv').after(item);
+    });
+    function blurpswold() {
+        var pswold = {{ session.get('psw') }};
+        if($('#pswold').val() == ""){
+            $('#pswolddiv').attr('class', 'form-group has-error');
+            $('#pswoldblock').text("原始密码不能为空");
+        }
+        else if(pswold == $('#pswold').val()){
+            $('#pswolddiv').attr('class', 'form-group has-success');
+            $('#pswoldblock').text("");
+        }
+        else{
+            $('#pswolddiv').attr('class', 'form-group has-error');
+            $('#pswoldblock').text("原始密码输入错误");
+        }
+    }
+    function blurpswnew() {
+        var pswold = $('#pswold').val();
+        var pswnew = $('#pswnew').val();
+        if(pswold==""){
+            $('#pswolddiv').attr('class', 'form-group has-error');
+            $('#pswoldblock').text("原始密码不能为空");
+        }
+        else if(pswnew == ""){
+            $('#pswnewdiv').attr('class', 'form-group has-error');
+            $('#pswnewblock').text("新密码不能为空");
+        }
+        else if(pswold == pswnew){
+            $('#pswnewdiv').attr('class', 'form-group has-error');
+            $('#pswnewblock').text("新密码与原始密码一致");
+        }
+        else if(pswnew.length < 6 || pswnew.length > 10){
+            $('#pswnewdiv').attr('class', 'form-group has-error');
+            $('#pswnewblock').text("请输入6-10位密码");
+        }
+        else{
+            $('#pswnewdiv').attr('class', 'form-group has-success');
+            $('#pswnewblock').text("");
+        }
+    }
+    function clickpswyes() {
+        var pswold = $('#pswold').val();
+        var pswnew = $('#pswnew').val();
+        if(pswold==""){
+            $('#pswolddiv').attr('class', 'form-group has-error');
+            $('#pswoldblock').text("原始密码不能为空");
+        }
+        else if(pswnew == ""){
+            $('#pswnewdiv').attr('class', 'form-group has-error');
+            $('#pswnewblock').text("新密码不能为空");
+        }
+        else if(pswold == pswnew){
+            $('#pswnewdiv').attr('class', 'form-group has-error');
+            $('#pswnewblock').text("新密码与原始密码一致");
+        }
+        else if(pswnew.length < 6 || pswnew.length > 10){
+            $('#pswnewdiv').attr('class', 'form-group has-error');
+            $('#pswnewblock').text("请输入6-10位密码");
+        }
+        else{
+            $.ajax({
+                type: 'POST',
+                url: '{{ url_for('admin', menu="info") }}',
+                data: {
+                    type: "psw",
+                    psw: pswnew
+                },
+                dataType: 'json',  //指希望服务端返回json格式的数据
+                success: function (data) { //data是json格式的数据
+                    alert("密码修改成功！");
+                    $('#pswolddiv').remove();
+                    $('#pswnewdiv').remove();
+                    $('#pswbtn').remove();
+                },
+                error: function (xhr, type) {
+                    console.log("error");
+                }
+            });
+        }
+    }
+    function clickpswno() {
+        $('#pswolddiv').remove();
+        $('#pswnewdiv').remove();
+        $('#pswbtn').remove();
+    }
+</script>
